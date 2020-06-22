@@ -10,7 +10,7 @@ import glob
 # Interface to the text file keys that steer the process
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 
-def read_ms_key(fname='../scripts/ms_file_key.txt'):
+def read_ms_key(fname='../scripts/data_files/ms_file_key.txt'):
     """
     Read the measurement set key into a big dictionary. This maps
     locations of reduced files to galaxy, project, and data set name.
@@ -139,7 +139,7 @@ def get_uvdata_key(gal=None,
 
     return uvdata_dict
 
-def read_dir_key(fname='../scripts/dir_key.txt'):
+def read_dir_key(fname='../scripts/data_files/dir_key.txt'):
     """
     Read the directory key, which gives us a general way to sort out
     which MS files go in which directory. This is relevant mainly for
@@ -242,7 +242,7 @@ def mosaic_key():
 
     return mosaic_key
 
-def read_mosaic_key(fname='../scripts/mosaic_definitions.txt'):
+def read_mosaic_key(fname='../scripts/data_files/mosaic_definitions.txt'):
     """
     Read the file containing the centers and velocities for each
     mosaic. Note that for cases where the galaxy is observed several
@@ -281,7 +281,7 @@ def read_mosaic_key(fname='../scripts/mosaic_definitions.txt'):
     
     return mosaic_key
 
-def read_multipart_key(fname='../scripts/multipart_fields.txt'):
+def read_multipart_key(fname='../scripts/data_files/multipart_fields.txt'):
     """
     Read the file containing the definitions of the mosaics
     for the multi-part fields.
@@ -318,7 +318,7 @@ def read_multipart_key(fname='../scripts/multipart_fields.txt'):
     return multipart_key
 
 def read_override_mosaic_params(
-    fname='../scripts/override_mosaic_params.txt'
+    fname='../scripts/data_files/override_mosaic_params.txt'
     ):
     """
     Read hand set overrides for cell and image sizes.
@@ -348,7 +348,7 @@ def read_override_mosaic_params(
     return override_dict
 
 def read_override_imaging_params(
-    fname='../scripts/override_imaging_params.txt'
+    fname='../scripts/data_files/override_imaging_params.txt'
     ):
     """
     Read hand set overrides for imaging parameters.
@@ -378,7 +378,7 @@ def read_override_imaging_params(
     return override_dict
 
 def read_singledish_key(
-    fname='../scripts/singledish_key.txt'
+    fname='../scripts/data_files/singledish_key.txt'
     ):
     """
     Read the single dish key.
