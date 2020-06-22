@@ -7,6 +7,7 @@
 lines_co = ['co10','co21','co32','co43','co54','co65']
 lines_13co = ['13co10','13co21','13co32','13co43','13co54','13co65']
 lines_c18o = ['c18o10','c18o21','c18o32','c18o43','c18o54','c18o65']
+lines_cn = ['cn10high','cn10low']
 
 # The line list dictionary
 
@@ -117,4 +118,6 @@ line_list = {
     'sio1514':650.94359,
     'sio1615':694.27543,
     'hi21cm':1.420405751,
+    'cn10high':113.490985,
+    'cn10low':113.144190,
     }

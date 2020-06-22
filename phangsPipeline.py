@@ -415,7 +415,7 @@ def extract_phangs_continuum(
     # The list of lines to flag. Default for PHANGS is to flag only
     # the CO lines before extracting the continuum.
 
-    lines_to_flag = line_list.lines_co+line_list.lines_13co+line_list.lines_c18o
+    lines_to_flag = line_list.lines_co+line_list.lines_13co+line_list.lines_c18o+line_list.lines_cn
 
     # Best practice here regarding statwt isn't obvious - it's the
     # continuum, so there are no signal free channels. I think we just
@@ -809,7 +809,8 @@ def extract_line(in_file=None,
                       chanbin='spw',
                       statalg='classic',
                       datacolumn='data',
-                      excludechans=exclude_str,
+                      excludechans=True,
+                      fitspw=exclude_str,
                       )
 
     print "--------------------------------------"
@@ -1049,7 +1050,7 @@ def extract_phangs_lines(
     ext='',
     quiet=False,
     append_ext='',
-    lines=['co21', 'c18o21'],
+    lines=['co21', 'c18o21', '13co21', 'co10', 'cn10high', 'cn10low'],
     ):
     """
     Extract all PHANGS lines and the mm continuum for a galaxy.
@@ -1066,14 +1067,20 @@ def extract_phangs_lines(
     # Hardcoded parameters for the PHANGS lines
 
     target_width = {}
+    target_width['co10'] = 2.5
     target_width['co21'] = 2.5
     target_width['13co21'] = 2.5
     target_width['c18o21'] = 6.0
+    target_width['cn10high'] = 5.0
+    target_width['cn10low'] = 5.0
     
     edge_for_statwt = {}
+    edge_for_statwt['co10'] = 25
     edge_for_statwt['co21'] = 25
     edge_for_statwt['13co21'] = 25
     edge_for_statwt['c18o21'] = 20
+    edge_for_statwt['cn10high'] = 25
+    edge_for_statwt['cn10low'] = 25
 
     # Loop and extract lines for each data set
 
@@ -1115,7 +1122,7 @@ def concat_phangs_lines(
     just_array='',
     ext='',
     quiet=False,
-    lines=['co21', 'c18o21'],
+    lines=['co21', 'c18o21', '13co21','co10','cn10high','cn10low'],
     ):
     """
     Concatenate the extracted lines into a few aggregated measurement
@@ -1210,7 +1217,7 @@ def contsub(
     # set the list of lines to flag
 
     if lines_to_flag == None:
-        lines_to_flag = line_list.lines_co + line_list.lines_13co + line_list.lines_c18o
+        lines_to_flag = line_list.lines_co + line_list.lines_13co + line_list.lines_c18o + line_list.lines_cn
 
     vm = au.ValueMapping(in_file)
 
@@ -1296,7 +1303,7 @@ def extract_continuum(
     # set the list of lines to flag
 
     if lines_to_flag == None:
-        lines_to_flag = line_list.lines_co + line_list.lines_13co + line_list.lines_c18o
+        lines_to_flag = line_list.lines_co + line_list.lines_13co + line_list.lines_c18o + line_list.lines_cn
 
     # Make a continuum copy of the data
 
@@ -2352,10 +2359,16 @@ def buildPhangsCleanCall(
 
     # Look up the line and data product
 
+    if product == 'co10':
+        clean_call.specmode = 'cube'
+        clean_call.restfreq_ghz = line_list.line_list['co10']
     if product == 'co21':
         clean_call.specmode = 'cube'
         clean_call.restfreq_ghz = line_list.line_list['co21']
 
+    if product == 'co10_chan0':
+        clean_call.specmode = 'mfs'
+        clean_call.restfreq_ghz = line_list.line_list['co10']
     if product == 'co21_chan0':
         clean_call.specmode = 'mfs'
         clean_call.restfreq_ghz = line_list.line_list['co21']
@@ -2367,6 +2380,30 @@ def buildPhangsCleanCall(
     if product == 'c18o21_chan0':
         clean_call.specmode = 'mfs'
         clean_call.restfreq_ghz = line_list.line_list['c18o21']
+
+    if product == '13co21':
+        clean_call.specmode = 'cube'
+        clean_call.restfreq_ghz = line_list.line_list['13co21']
+
+    if product == '13co21_chan0':
+        clean_call.specmode = 'mfs'
+        clean_call.restfreq_ghz = line_list.line_list['13co21']
+
+    if product == 'cn10high':
+        clean_call.specmode = 'cube'
+        clean_call.restfreq_ghz = line_list.line_list['cn10high']
+
+    if product == 'cn10high_chan0':
+        clean_call.specmode = 'mfs'
+        clean_call.restfreq_ghz = line_list.line_list['cn10high']
+
+    if product == 'cn10low':
+        clean_call.specmode = 'cube'
+        clean_call.restfreq_ghz = line_list.line_list['cn10low']
+
+    if product == 'cn10low_chan0':
+        clean_call.specmode = 'mfs'
+        clean_call.restfreq_ghz = line_list.line_list['cn10low']
 
     if product == 'cont':
         clean_call.specmode = 'mfs'
