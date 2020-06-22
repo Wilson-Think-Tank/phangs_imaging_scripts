@@ -1540,7 +1540,8 @@ def pick_phangs_cell_and_imsize(
     override_dict = read_override_mosaic_params()
 
     # Check for overrides
-    if override_dict[in_file].has_key('cell_size'):
+    if override_dict.has_key(in_file):
+        if override_dict[in_file].has_key('cell_size'):
             cell_size_string = override_dict[in_file]['cell_size']
         if override_dict[in_file].has_key('x_size'):
             x_size_string = override_dict[in_file]['x_size']
