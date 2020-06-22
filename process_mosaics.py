@@ -27,7 +27,7 @@ cutoff = 0.25
 
 # ... a text list. The script will process only these galaxies.
 
-only = ['ngc3627']
+only = ["ngc_4038_4039"]
 
 # ... skip these galaxies
 skip = []
@@ -53,8 +53,8 @@ just_product = ['co21']
 # ... set these variables to indicate what steps of the script should
 # be performed.
 
-do_common_res = False
-do_align = False
+do_common_res = True
+do_align = True
 do_mosaic = True
 do_cleanup_cubes = True
 
