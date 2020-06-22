@@ -12,7 +12,7 @@ import glob
 
 interferometric_array_list = ['12m', '7m', '12m+7m']
 full_array_list = ['12m+7m+tp', '12m+7m', '12m', '7m', '7m+tp']
-full_product_list = ['co21','c18o21','13co21']
+full_product_list = ['co21','c18o21','13co21','co10','cn10high','cn10low']
 gal_part_list = pp.list_gal_names()
 dir_key = pp.read_dir_key()
 
@@ -29,7 +29,7 @@ cutoff = 0.25
 # ... a text list. The script will process only these galaxies.
 
 #only = []
-only = ['ngc3627']
+only = ["ngc_4038_4039"]
 
 # ... skip these galaxies
 skip = []
@@ -48,22 +48,26 @@ just_array = ['7m', '7m+tp', '12m+7m','12m+7m+tp']
 # ... set as the products to be handled. Valid choices for the basic
 # PHANGS data are 'co21', 'c18o21', 'cont', 'co21_chan0', and
 # 'c18o21_chan0'. Note that right now cont and chan0 are not tested.
+# Choices added by cdw are '13co21', 'co10', 'cn10high', and 'cn10low'.
 
 just_product = ['co21']
+#just_product = ['co21','13co21','c18o21','co10','cn10high','cn10low']
 
 # ... set these variables to indicate what steps of the script should
 # be performed.
 
 rebuild_directories = False
 
-stage_cubes = False
-stage_singledish = False
+stage_cubes = True
+stage_singledish = True
 
 primary_beam_correct = True
 convolve_to_round_beam = True
 
 prep_for_feather = True
-feather_data = True
+feather_data = False
+# only use Chris's new feather order
+reverse_feather_data = True
 
 cleanup_cubes = True
 
@@ -191,6 +195,15 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                     if array == "12m+7m+tp" or array == "7m+tp":
                         continue
                     pcp.phangs_feather_data(
+                        gal=gal_part, array=array, product=product,
+                        root_dir=outroot_dir,
+                        overwrite=True, cutoff=cutoff,
+                        )
+
+                if this_loop == 'feather' and reverse_feather_data:
+                    if array == "12m+7m+tp" or array == "7m+tp":
+                        continue
+                    pcp.chris_feather_data(
                         gal=gal_part, array=array, product=product,
                         root_dir=outroot_dir,
                         overwrite=True, cutoff=cutoff,

@@ -399,6 +399,66 @@ def phangs_feather_data(
             outfile=outfile_name, 
             mode='divide', cutoff=cutoff)
 
+def chris_feather_data(
+    gal=None, array=None, product=None, root_dir=None, 
+    cutoff=-1,overwrite=False):
+    """
+    Feather the pbcorr'd interferometric and aligned total power data
+    """
+
+    if gal is None or array is None or product is None or \
+            root_dir is None:
+        print("Missing required input.")
+        return    
+
+    sdfile_in = root_dir+'process/'+gal+'_tp_'+product+'_align_'+array+'.image'
+    interf_in = root_dir+'process/'+gal+'_'+array+'_'+product+'_pbcorr_round.image'
+    pbfile_name = root_dir+'raw/'+gal+'_'+array+'_'+product+'.pb' 
+
+    if (os.path.isdir(sdfile_in) == False):
+        print("Single dish file not found: "+sdfile_in)
+        return
+        
+    if (os.path.isdir(interf_in) == False):
+        print("Interferometric file not found: "+interf_in)
+        return
+
+    if (os.path.isdir(pbfile_name) == False):
+        print("Primary beam file not found: "+pbfile_name)
+        return
+
+    # Feather the "pbcorr"d inteferometric and "align"d TP data.
+    outfile_name = root_dir+'process/'+gal+'_'+array+'+tp_'+product+ \
+        '_pbcorr_round.image'
+
+    if overwrite:        
+        os.system('rm -rf '+outfile_name)
+    os.system('rm -rf '+outfile_name+'.temp')
+    feather(imagename=outfile_name+'.temp',
+            highres=interf_in,
+            lowres=sdfile_in,
+            sdfactor=1.0,
+            lowpassfiltersd=False)
+    imsubimage(imagename=outfile_name+'.temp', outfile=outfile_name,
+               dropdeg=True)
+    os.system('rm -rf '+outfile_name+'.temp')
+    infile_name = outfile_name
+
+# apply primary beam to flatten the feathered data.
+    outfile_name = root_dir+'process/'+gal+'_'+array+'+tp_'+product+ \
+        '_flat_round.image'
+    
+    if overwrite:        
+        os.system('rm -rf '+outfile_name)
+
+    print(infile_name)
+    print(pbfile_name)
+    impbcor(imagename=infile_name,
+            pbimage=pbfile_name, 
+            outfile=outfile_name, 
+            mode='multiply', cutoff=-1.0)
+#            mode='divide', cutoff=cutoff)
+
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # CLEANUP
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
@@ -573,12 +633,19 @@ def phangs_cleanup_cubes(
         print("Missing required input.")
         return
 
+#    If necessary, create the galaxy subdirectory in 'products/'  : cdw
+    
+    if os.path.isdir(root_dir+'products/'+gal+'/') == False:
+        print("Making product sudirectory for  "+gal)
+        os.system('mkdir '+root_dir+'products/'+gal+'/')
+
     for this_ext in ['flat', 'pbcorr']:
 
         root = root_dir+'process/'+gal+'_'+array+'_'+product+'_'+this_ext
+        rootfits = root_dir+'products/'+gal+'/'+gal+'_'+array+'_'+product+'_'+this_ext
         infile = root+'_round.image'
         outfile = root+'_round_k.image'
-        outfile_fits = root+'_round_k.fits'
+        outfile_fits = rootfits+'_round_k.fits'
     
         if os.path.isdir(infile) == False:
             print("File does not exist: "+infile)
@@ -608,11 +675,11 @@ def phangs_cleanup_cubes(
         hdr = hdu[0].header
         data = hdu[0].data
 
-        for card in ['BLANK','DATE-OBS','OBSERVER','O_BLANK','O_BSCALE',
-                     'O_BZERO','OBSRA','OBSDEC','OBSGEO-X','OBSGEO-Y','OBSGEO-Z',
-                     'DISTANCE']:
-            if card in hdr.keys():
-                hdr.remove(card)
+#        for card in ['BLANK','DATE-OBS','OBSERVER','O_BLANK','O_BSCALE',
+#                     'O_BZERO','OBSRA','OBSDEC','OBSGEO-X','OBSGEO-Y','OBSGEO-Z',
+#                     'DISTANCE']:
+#            if card in hdr.keys():
+#                hdr.remove(card)
             
         while 'HISTORY' in hdr.keys():
             hdr.remove('HISTORY')
@@ -650,8 +717,164 @@ def phangs_cleanup_cubes(
                 print("... fractional deviation: "+str(frac_dev))
                 
         hdu.writeto(outfile_fits, clobber=True)
-        
+
+#        return         # cdw: this was why it wasn't writing all to fits
+
+# new: for rebinning and trimming pb files cdw Jan 9, 2020
+#       added writing aligned TP file to fits Jan 22, 2020
+
+def phangs_cleanup_pbcubes(
+        gal=None, array=None, product=None, root_dir=None, 
+        overwrite=False, min_pixeperbeam=3, roundbeam_tol=0.01, 
+        vstring=''):
+    """
+    Clean up cubes.
+    """
+
+    if gal is None or array is None or product is None or \
+            root_dir is None:
+        print("Missing required input.")
         return
+
+    for this_ext in ['pb']:   # edited cdw
+
+        inroot = root_dir+'raw/'+gal+'_'+array+'_'+product
+        root = root_dir+'process/'+gal+'_'+array+'_'+product
+        rootfits = root_dir+'products/'+gal+'/'+gal+'_'+array+'_'+product
+        infile = inroot+'.pb'
+        outfile = root+'.pb.rebin'
+        outfile_fits = rootfits+'_pb_rebin.fits'
+    
+        # Trim the cube to a smaller size and rebin as needed
+
+# need to use the image cube to see check rebinning is needed for pb cube
+
+        infile = root+'_flat_round.image'
+
+        if os.path.isdir(infile) == False:
+            print("File does not exist: "+infile)
+            print("Returning.")
+            return
+
+    # First, rebin if needed
+        hdr = imhead(infile)
+        if (hdr['axisunits'][0] != 'rad'):
+            print("ERROR: Based on CASA experience. I expected units of radians.")
+            print("I did not find this. Returning. Adjust code or investigate file "+infile)
+            return
+
+        pixel_as = abs(hdr['incr'][0]/np.pi*180.0*3600.)
+
+        if (hdr['restoringbeam']['major']['unit'] != 'arcsec'):
+            print("ERROR: Based on CASA experience. I expected units of arcseconds for the beam.")
+            print("I did not find this. Returning. Adjust code or investigate file "+infile)
+            return    
+        bmaj = hdr['restoringbeam']['major']['value']    
+    
+        pix_per_beam = bmaj*1.0 / pixel_as*1.0
+    
+# may need a new version of this too? cdw
+#        trim_cube(infile=infile, outfile=outfile, 
+#                  overwrite=overwrite, inplace=False,
+#                  min_pixperbeam=min_pixeperbeam)
+
+        infile = inroot+'.pb'
+
+        if os.path.isdir(infile) == False:
+            print("File does not exist: "+infile)
+            print("Returning.")
+            return
+
+        if pix_per_beam > 6:
+            imrebin(
+                imagename=infile,
+                outfile=outfile+'.temp',
+                factor=[2,2,1],
+                crop=True,
+                dropdeg=True,
+                overwrite=overwrite,
+                )
+        else:
+            os.system('cp -r '+infile+' '+outfile+'.temp')
+
+    # Figure out the extent of the image inside the cube
+        myia = au.createCasaTool(iatool)
+        myia.open(outfile+'.temp')
+        mask = myia.getchunk(getmask=True)    
+        myia.close()
+
+        this_shape = mask.shape
+    
+        mask_spec_x = np.sum(np.sum(mask*1.0,axis=2),axis=1) > 0
+        pad = 0
+        xmin = np.max([0,np.min(np.where(mask_spec_x))-pad])
+        xmax = np.min([np.max(np.where(mask_spec_x))+pad,mask.shape[0]-1])
+
+        mask_spec_y = np.sum(np.sum(mask*1.0,axis=2),axis=0) > 0
+        ymin = np.max([0,np.min(np.where(mask_spec_y))-pad])
+        ymax = np.min([np.max(np.where(mask_spec_y))+pad,mask.shape[1]-1])
+
+        mask_spec_z = np.sum(np.sum(mask*1.0,axis=0),axis=0) > 0
+        zmin = np.max([0,np.min(np.where(mask_spec_z))-pad])
+        zmax = np.min([np.max(np.where(mask_spec_z))+pad,mask.shape[2]-1])
+    
+        box_string = ''+str(xmin)+','+str(ymin)+','+str(xmax)+','+str(ymax)
+        chan_string = ''+str(zmin)+'~'+str(zmax)
+
+        print("... ... ... box selection: "+box_string)
+        print("... ... ... channel selection: "+chan_string)
+
+        if overwrite:
+            os.system('rm -rf '+outfile)
+            imsubimage(
+                imagename=outfile+'.temp',
+                outfile=outfile,
+                box=box_string,
+                chans=chan_string,
+                )
+    
+        os.system('rm -rf '+outfile+'.temp')
+    
+        # Export to FITS
+    
+        exportfits(imagename=outfile, fitsimage=outfile_fits,
+                   velocity=True, overwrite=True, dropstokes=True, 
+                   dropdeg=True, bitpix=-32)
+    
+        # Clean up headers
+
+        hdu = pyfits.open(outfile_fits)
+
+        hdr = hdu[0].header
+        data = hdu[0].data
+
+#        for card in ['BLANK','DATE-OBS','OBSERVER','O_BLANK','O_BSCALE',
+#                     'O_BZERO','OBSRA','OBSDEC','OBSGEO-X','OBSGEO-Y','OBSGEO-Z',
+#                     'DISTANCE']:
+#            if card in hdr.keys():
+#                hdr.remove(card)
+            
+        while 'HISTORY' in hdr.keys():
+            hdr.remove('HISTORY')
+
+        hdr.add_history('This cube was produced by the PHANGS-ALMA pipeline.')
+        hdr.add_history('PHANGS-ALMA Pipeline version ' + pipeVer)
+        if vstring != '':
+            hdr.add_history('This is part of data release '+vstring)
+
+        hdr['OBJECT'] = dir_for_gal(gal)
+
+        if vstring == '':
+            hdr['ORIGIN'] = 'PHANGS-ALMA'
+        else:
+            hdr['ORIGIN'] = 'PHANGS-ALMA '+vstring
+
+        datamax = np.nanmax(data)
+        datamin = np.nanmin(data)
+        hdr['DATAMAX'] = datamax
+        hdr['DATAMIN'] = datamin
+
+        hdu.writeto(outfile_fits, clobber=True)
 
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # LINEAR MOSAICKING ROUTINES
