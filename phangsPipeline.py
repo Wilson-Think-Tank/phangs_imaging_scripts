@@ -896,10 +896,10 @@ def extract_line_for_galaxy(
             lines_in_ms = list_lines_in_ms(in_file, gal=gal)
             if lines_in_ms == None:
                 print "No lines found in measurement set."
-                return
+                continue
             if lines_in_ms.count(line) == 0:
                 print "Line not found in measurement set."
-                return
+                continue
 
             extract_line(in_file=in_file,
                          out_file=out_file,
