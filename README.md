@@ -95,9 +95,8 @@ in stage_imaging.py makes it pretty easy to do this.
 ### SETTING UP THE PIPELINE
 
 The actual imaging part of the pipeline is now mostly concentrated in
-the phangsPipeline.py module. You want this imported as `pp` in able
-to be able to run the scripts. I do this by adding the following lines
-to my `~/.casa/init.py`:
+the phangsPipeline.py module. You want this imported as `pp` to be able to run
+the scripts. I do this by adding the following lines to my `~/.casa/init.py`:
 
 ```
 sys.path.append("/home/maury/leroy.42/casapy/analysis_scripts/")
@@ -231,16 +230,23 @@ Similar to stage_data, the idea here is that you edit the top of the
 script to select which array, galaxy, and data product you would like
 to image.
 
-The imaging itself is current set up in these stages:
+The imaging itself is currently set up in these stages:
 
-1) Dirty map creation.
+1) Dirty map creation. Output files have "_dirty.*" suffix.
 
-2) Multiscale clean down to S/N ~ 4 with a broad mask or no mask.
+2) [optional] Multiscale clean down to S/N ~ 4. Output files have
+"_multiscale.*" suffix. Uses either no mask (first pass) or a broad
+mask (second pass). See below for the explanation of these masks and
+their creation.
 
-3) Single scale clean of the remaining flux down to low S/N or
-convergence in flux. Uses a narrower mask.
+3) [optional] Singlescale clean of the remaining flux (i.e. continues
+from output of multiscale clean if that step is run) down to low S/N or
+convergence in flux. Output files have "_singlescale." suffix. Uses a
+narrower mask. See below for the explanation of the mask creation.
 
-4) Export to FITS files.
+4) Export select maps to FITS. Maps exported are .image, .model, .mask,
+.pb (from multi/singlescale steps only), and .residual (from
+multi/singlescale steps only).
 
 These steps are carried out inside the phangsPipeline, which in
 principle (with a bit of work) can be deployed in a variety of more
@@ -248,13 +254,24 @@ general ways.
 
 ### CLEAN MASKS
 
-The multiscale clean involves a broad clean mask. So far, I have been
-creating these as an output of the last step of the pipeline (data
-product creation) based on the feathered cubes with some heavy
-processing. Then these are placed back in the clean mask directory and
-imaging gets rerun. This means that imaging is an iterative
-process. In practice this mostly just takes one iteration: image
-without a clean mask, build a clean mask, then image again.
+The singlescale clean masks are created on the fly during imaging. It
+consists of a simple procedure that leverages CASA statistics and scipy.
+
+The final multiscale clean involves a broad mask that is, so far,
+created as an output of the last step of the entire pipeline (during
+data product creation). This final mask is based on the feathered cubes,
+with some heavy processing. This means that imaging is an iterative
+process:
+
+1) Image without a multiscale clean mask.
+
+2) Build a broad clean mask, which is placed in the clean mask directory.
+
+3) Rerun all imaging with the new multiscale clean mask.
+
+4) [optional] Repeat steps 2 and 3.
+
+In practice, this mostly just takes one iteration.
 
 ### POST-PROCESSING
 
