@@ -1778,7 +1778,7 @@ def apply_additional_mask(
         mask *= (new_mask > new_thresh)
     else:
         mask = (mask + (new_mask > new_thresh)) >= 1.0
-    myia.putchunk(mask)
+    myia.putchunk(mask.astype(int))
     myia.close()
 
     return
@@ -1860,7 +1860,7 @@ def signal_mask(
     os.system('rm -rf '+cube_root+'.mask')
     os.system('cp -r '+cube_root+'.image '+cube_root+'.mask')
     myia.open(cube_root+'.mask')
-    myia.putchunk(mask)
+    myia.putchunk(mask.astype(int))
     myia.close()
 
 def export_to_fits(
