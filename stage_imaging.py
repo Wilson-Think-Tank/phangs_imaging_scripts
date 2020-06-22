@@ -8,10 +8,18 @@ import os
 import phangsPipeline as pp
 import analysisUtils as au
 import glob
+import sys
+import datetime
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+# text file path to redirect terminal output
+utc_now_str = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
+log_path = "/home/brunettn/antennae/imaging/logs/stage_imaging_{:}.log".format(utc_now_str)
+sys.stdout = open(log_path, "w", 1)
+sys.stderr = sys.stdout
 
 # ... a list of directories
 data_dirs = [
@@ -78,7 +86,7 @@ lines = ['co21']
 # the measurement set, first flagging lines. The velocity windows used
 # for flagging lines is set in "mosaic_definitions.txt"
 
-do_copy = True
+do_copy = False
 do_custom_scripts = False
 do_extract_lines = True
 do_concat_lines = True
@@ -206,3 +214,7 @@ for gal in gals:
         pp.cleanup_phangs_staging(
             gal=gal,
             just_array=just_array)
+
+sys.stdout.close()
+sys.stdout = sys.__stdout__
+sys.stderr = sys.__stderr__
