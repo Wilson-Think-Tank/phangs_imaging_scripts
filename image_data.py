@@ -24,36 +24,30 @@ import glob
 
 # ... a text list. The script will process only these galaxies.
 
-#'ngc1313_1','ngc1313_2','ngc1313_3',
-
-only = ['ngc0247_1','ngc0247_2','ngc0247_3','ngc0247_4',
-        'ngc4459',
-        'ngc5128_1','ngc5128_2','ngc5128_3',
-        'ngc7793_1','ngc7793_2',
-        ]
+only = [
+    "ngc_4038_4039"
+]
 
 # ... skip these galaxies
-#skip = []
 skip = []
 
 # ... start with this galaxy
 
-first = ""
+first = "ngc_4038_4039"
 last = ""
 
 # ... set as '12m', '7m', or '12m+7m' to process only data from that
-# array. Leave it as None to process all data.
+# array. Leave it as an empty list to process all data.
 
-#just_array = ['7m','12m','12m+7m']
-#just_array = ['12m']
-just_array = ['7m']
-#just_array = ['12m+7m']
+just_array = ['12m+7m']
 
 # ... set as the products to be handled. Valid choices for the basic
 # PHANGS data are 'co21', 'c18o21', 'cont', 'co21_chan0', and
 # 'c18o21_chan0'. Note that right now cont and chan0 are not tested.
+# Choices added by cdw are '13co21', 'co10', 'cn10high', and 'cn10low'.
 
 just_product = ['co21']
+#lines = ['co21', 'c18o21','13co21','co10','cn10high','cn10low']
 
 # ... set these variables to indicate what steps of the script should
 # be performed. The steps do:
@@ -100,11 +94,14 @@ just_product = ['co21']
 make_dirty_image=True
 forceSquare=False
 revert_to_dirty=False
-read_in_clean_mask=True
-run_multiscale_clean=True
+read_in_clean_mask=False
+#run_multiscale_clean=True
+run_multiscale_clean=False
 revert_to_multiscale=False
-make_singlescale_mask=True
-run_singlescale_clean=True
+#make_singlescale_mask=True
+make_singlescale_mask=False
+#run_singlescale_clean=True
+run_singlescale_clean=False
 export_to_fits= True
 
 do_only_new = False
@@ -117,7 +114,21 @@ gals = pp.list_gal_names()
 
 array_list = ['12m', '7m', '12m+7m']
 
-product_list = ['co21','c18o21','cont','co21_chan0','c18o21_chan0']
+product_list = [
+    'co10',
+    'cn10high',
+    'cn10low',
+    'co21',
+    'c18o21',
+    '13co21',
+    'co10_chan0',
+    'cn10high_chan0',
+    'cn10low_chan0',
+    'co21_chan0',
+    'c18o21_chan0',
+    '13co21_chan0',
+    'cont',
+]
 
 before_first = True
 after_last = False
@@ -185,7 +196,7 @@ for gal in gals:
                 product=product,
                 tag='',
                 forceSquare=forceSquare)
-        
+
             if clean_call == None:
                 continue
 
@@ -200,4 +211,3 @@ for gal in gals:
                 run_singlescale_clean=run_singlescale_clean,
                 do_export_to_fits=export_to_fits,
                 )
-            

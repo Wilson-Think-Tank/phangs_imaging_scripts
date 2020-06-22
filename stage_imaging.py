@@ -15,13 +15,13 @@ import glob
 
 # ... a list of directories
 data_dirs = [
-    '/data/tycho/0/leroy.42/reduction/alma/PHANGS/',
-    '/data/young/leroy.42/alma_data/PHANGS/',
+    '/home/brunettn/antennae/2018.1.00272.S/'
     ]
 
 # ... a text list. The script will process only these galaxies.
 
 only = [
+    "ngc_4038_4039"
     ]
 
 # ... skip these galaxies.
@@ -30,16 +30,18 @@ skip = []
 
 # ... start with this galaxy
 
-first = "ngc3599"
+first = ""
 last = ""
 
 # ... set this to '12m' or '7m' to stage data only for those
 # arrays. Leave it as None to process all data. If both 12m and 7m
 # data are processed, then the script will also create 12m+7m data. So
 # you need to rerun the staging when both data sets arrive.
+#
+# This looks like it should be the "array code tag" from the ms_file_key.txt
+# file. -brunettn
 
 just_array = None
-#just_array = '12m'
 
 # List of lines to process. There's not a lot of error catching
 # here. It needs to be a list and it only knows about co21 and c18o21
@@ -47,10 +49,12 @@ just_array = None
 # parameters remain hard-coded until we come up with a more general
 # solution to the rebin-and-regrid problem.
 
-lines = ['co21', 'c18o21']
+lines = ['co21']
+#lines = ['co21', 'c18o21', '13co21']
 #lines = ['co21', 'c18o21','13co21']
 #lines = ['13co21','c18o21']
 #lines = ['c18o21']
+#lines = ['co21', 'c18o21','13co21','co10','cn10high','cn10low']
 
 # ... set these variables to indicate what steps of the script should
 # carry out. The steps do:
@@ -74,12 +78,12 @@ lines = ['co21', 'c18o21']
 # the measurement set, first flagging lines. The velocity windows used
 # for flagging lines is set in "mosaic_definitions.txt"
 
-do_copy = False # True
+do_copy = True
 do_custom_scripts = False
-do_extract_lines = False # True
-do_concat_lines = False # True
-do_extract_cont = False # True
-do_concat_cont = True # True
+do_extract_lines = True
+do_concat_lines = True
+do_extract_cont = False
+do_concat_cont = False
 do_only_new = False
 do_cleanup = False
 
