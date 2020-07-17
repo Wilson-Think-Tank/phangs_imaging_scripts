@@ -43,20 +43,21 @@ last = ""
 # only data from that array. Leave it as None to process all data.
 
 #just_array = []
-just_array = ['7m', '7m+tp', '12m+7m','12m+7m+tp']
+# just_array = ['7m', '7m+tp', '12m+7m','12m+7m+tp']
+just_array = ['7m', '7m+tp']
 
 # ... set as the products to be handled. Valid choices for the basic
 # PHANGS data are 'co21', 'c18o21', 'cont', 'co21_chan0', and
 # 'c18o21_chan0'. Note that right now cont and chan0 are not tested.
 # Choices added by cdw are '13co21', 'co10', 'cn10high', and 'cn10low'.
 
-just_product = ['co21']
+just_product = ['cn10high']
 #just_product = ['co21','13co21','c18o21','co10','cn10high','cn10low']
 
 # ... set these variables to indicate what steps of the script should
 # be performed.
 
-rebuild_directories = False
+rebuild_directories = True
 
 stage_cubes = True
 stage_singledish = True
