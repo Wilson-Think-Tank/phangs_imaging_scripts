@@ -18,6 +18,8 @@ import phangsPipeline as pp
 import analysisUtils as au
 import glob
 
+casalog.showconsole(onconsole=False)
+
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -33,7 +35,7 @@ skip = []
 
 # ... start with this galaxy
 
-first = "ngc_4038_4039"
+first = ""
 last = ""
 
 # ... set as '12m', '7m', or '12m+7m' to process only data from that
@@ -95,12 +97,9 @@ make_dirty_image=True
 forceSquare=False
 revert_to_dirty=False
 read_in_clean_mask=False
-#run_multiscale_clean=True
 run_multiscale_clean=False
 revert_to_multiscale=False
-#make_singlescale_mask=True
 make_singlescale_mask=False
-#run_singlescale_clean=True
 run_singlescale_clean=False
 export_to_fits= True
 
@@ -137,12 +136,12 @@ for gal in gals:
     
     if len(only) > 0:
         if only.count(gal) == 0:
-            print "Skipping "+gal
+            casalog.post("Skipping "+gal, "INFO", "")
             continue
 
     if len(skip) > 0:
         if skip.count(gal) > 0:
-            print "Skipping "+gal
+            casalog.post("Skipping "+gal, "INFO", "")
             continue
 
     if first != "":
@@ -161,17 +160,17 @@ for gal in gals:
 
         if len(just_array) > 0:
             if just_array.count(array) == 0:
-                print "Skipping "+array
+                casalog.post("Skipping "+array, "INFO", "")
                 continue
 
         for product in product_list:
 
             if len(just_product) > 0:
                 if just_product.count(product) == 0:
-                    print "Skipping "+product
+                    casalog.post("Skipping "+product, "INFO", "")
                     continue
 
-            print gal, array, product
+            casalog.post(gal + " " + array + " " + product, "INFO", "")
 
             this_dir = pp.dir_for_gal(gal)
             out_image_name = this_dir+gal+'_'+array+'_'+product+'.image'
@@ -182,11 +181,11 @@ for gal in gals:
                 out_image_name = this_dir+gal+'_'+array+'_'+product+'.image'
                 has_image = len(glob.glob(out_image_name)) > 0
                 if has_image:
-                    print ""
-                    print "... You requested to only image new data."
-                    print "... I found an existing image named "+out_image_name+" ."
-                    print "... I will skip this combination of galaxy, array, and product."
-                    print ""
+                    casalog.post("", "WARN", "")
+                    casalog.post("... You requested to only image new data.", "WARN", "")
+                    casalog.post("... I found an existing image named "+out_image_name+" .", "WARN", "")
+                    casalog.post("... I will skip this combination of galaxy, array, and product.", "WARN", "")
+                    casalog.post("", "WARN", "")
                     continue
 
             clean_call = \
