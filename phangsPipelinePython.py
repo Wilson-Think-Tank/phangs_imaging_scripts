@@ -57,7 +57,7 @@ def get_uvdata_key(gal=None,
 
     if gal == None:
         if quiet == False:
-            print("Please specify a galaxy.")
+            casalog.post("Please specify a galaxy.", "SEVERE", "")
         return None
 
     ms_key = read_ms_key()
@@ -66,7 +66,7 @@ def get_uvdata_key(gal=None,
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
-            print("Galaxy "+gal+" not found in the measurement set key.")
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
         return None
     gal_specific_key = ms_key[gal]
 
@@ -117,11 +117,11 @@ def get_uvdata_key(gal=None,
 
             components = this_calibrated_file.split('/calibrated/')
             if len(components) != 2:
-                print("")
-                print("WARNING! Something is wrong with file "+this_calibrated_file)
-                print("We assume that there is one and only one /calibrated/ in the directory.")
-                print("Fix this or whatever else is going wrong and rerun. Skipping for now.")
-                print("")
+                casalog.post("", "WARN", "")
+                casalog.post("Something is wrong with file "+this_calibrated_file, "WARN", "")
+                casalog.post("We assume that there is one and only one /calibrated/ in the directory.", "WARN", "")
+                casalog.post("Fix this or whatever else is going wrong and rerun. Skipping for now.", "WARN", "")
+                casalog.post("", "WARN", "")
                 continue
 
             this_dir = components[0]+'/'
@@ -177,7 +177,7 @@ def dir_for_gal(gal=None,
 
     if gal == None:
         if quiet == False:
-            print("Please specify a galaxy.")
+            casalog.post("Please specify a galaxy.", "SEVERE", "")
         return
 
     dir_key = read_dir_key()
