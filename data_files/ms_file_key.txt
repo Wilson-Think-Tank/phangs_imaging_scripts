@@ -3,9 +3,9 @@
 # column 3: array code tag
 # column 4: path to measurement set
 #
-ngc_4038_4039   272      12m_b3_ext     science_goal.uid___A001_X133d_X963/group.uid___A001_X133d_X964/member.uid___A001_X133d_X965/calibrated_nrao/calibrated_final.ms
-ngc_4038_4039   272      12m_b3_com     science_goal.uid___A001_X133d_X963/group.uid___A001_X133d_X964/member.uid___A001_X133d_X967/calibrated_nrao/calibrated_final.ms
+ngc_4038_4039   272      12m_ext_b3     science_goal.uid___A001_X133d_X963/group.uid___A001_X133d_X964/member.uid___A001_X133d_X965/calibrated_nrao/calibrated_final.ms
+ngc_4038_4039   272      12m_com_b3     science_goal.uid___A001_X133d_X963/group.uid___A001_X133d_X964/member.uid___A001_X133d_X967/calibrated_nrao/calibrated_final.ms
 ngc_4038_4039   272      7m_b3          science_goal.uid___A001_X133d_X963/group.uid___A001_X133d_X964/member.uid___A001_X133d_X969/calibrated_nrao/calibrated_final.ms
-ngc_4038_4039   272      12m_b6_ext     science_goal.uid___A001_X133d_X96d/group.uid___A001_X133d_X96e/member.uid___A001_X133d_X96f/calibrated_nrao/calibrated_final.ms
-ngc_4038_4039   272      12m_b6_com     science_goal.uid___A001_X133d_X96d/group.uid___A001_X133d_X96e/member.uid___A001_X133d_X971/calibrated_nrao/calibrated_final.ms
+ngc_4038_4039   272      12m_ext_b6     science_goal.uid___A001_X133d_X96d/group.uid___A001_X133d_X96e/member.uid___A001_X133d_X96f/calibrated_nrao/calibrated_final.ms
+ngc_4038_4039   272      12m_com_b6     science_goal.uid___A001_X133d_X96d/group.uid___A001_X133d_X96e/member.uid___A001_X133d_X971/calibrated_nrao/calibrated_final.ms
 ngc_4038_4039   272      7m_b6          science_goal.uid___A001_X133d_X96d/group.uid___A001_X133d_X96e/member.uid___A001_X133d_X973/calibrated_nrao/calibrated_final.ms

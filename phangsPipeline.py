@@ -67,6 +67,10 @@ def copy_data(gal=None,
 
     log_file = casalog.logfile()
 
+    if just_array == None:
+        just_array = '12m_ext+12m_com+7m'
+    just_array_list = just_array.split('+')
+
     if gal == None:
         if quiet == False:
             casalog.post("Please specify a galaxy.", "SEVERE", "")
@@ -96,9 +100,6 @@ def copy_data(gal=None,
         casalog.post("--------------------------------------------------------", "INFO", "")
 
         casalog.post("Galaxy: "+gal, "INFO", "")
-        if just_array != None: casalog.post("Project: "+just_proj, "INFO", "")
-        if just_array != None: casalog.post("Measurements Set: "+just_ms, "INFO", "")
-        if just_array != None: casalog.post("Array: "+just_array, "INFO", "")
 
     # Loop over files in the measurement set key
 
@@ -122,9 +123,16 @@ def copy_data(gal=None,
                             continue
  
             if just_array != None:
-                if this_ms.count(just_array) == 0:
+                just_array_in_this_ms = False
+                for array in just_array_list:
+                    if array in this_ms:
+                        just_array_in_this_ms = True
+                        break
+                if not just_array_in_this_ms:
                     continue
-           
+            
+            casalog.post("Project: "+this_proj, "INFO", "")
+            casalog.post("Measurement set: "+this_ms, "INFO", "")
 
             # Identify the input file, checking for its existence in
             # any of the various root directories.
@@ -230,6 +238,10 @@ def concat_line_for_gal(
 
     log_file = casalog.logfile()
 
+    if just_array == None:
+        just_array = '12m_ext+12m_com+7m'
+    just_array_list = just_array.split('+')
+
     # Change to the right directory
 
     this_dir = dir_for_gal(gal)    
@@ -274,7 +286,12 @@ def concat_line_for_gal(
                             continue
             
             if just_array != None:
-                if this_ms.count(just_array) == 0:
+                just_array_in_this_ms = False
+                for array in just_array_list:
+                    if array in this_ms:
+                        just_array_in_this_ms = True
+                        break
+                if not just_array_in_this_ms:
                     continue
 
             this_in_file = gal+'_'+this_proj+'_'+this_ms+'_'+line+'.ms'    
@@ -592,7 +609,7 @@ def chanwidth_for_line(
 
     if len(spw_list) == 0:
         if quiet == False:
-            casalog.post("No spectral windows contain this line at this redshift.", "SEVERE", "")
+            casalog.post("No spectral windows contain this line at this redshift.", "WARN", "")
         return
 
     # Figure out how much averaging is needed to reach the target resolution
@@ -696,16 +713,16 @@ def extract_line(in_file=None,
         nchan_for_recenter = int(np.max(np.ceil(vwidth / chan_fine)))
 
     # Cast to text with specified precision.
-    restfreq_string = "{:12.8f}".format(restfreq_ghz)+'GHz'
-    start_vel_string =  "{:12.8f}".format(start_vel_kms)+'km/s'
-    chanwidth_string =  "{:12.8f}".format(chan_fine)+'km/s'
+    restfreq_string = "{:12.8f}".format(restfreq_ghz)+' GHz'
+    start_vel_string =  "{:12.8f}".format(start_vel_kms)+' km/s'
+    chanwidth_string =  "{:12.8f}".format(chan_fine)+' km/s'
 
     if quiet == False:
         casalog.post("... shifting the fine grid (before any regridding)", "INFO", "")
         casalog.post("... rest frequency: "+restfreq_string, "INFO", "")
         casalog.post("... new starting velocity: "+start_vel_string, "INFO", "")
-        casalog.post("... original velocity width: "+str(current_chan_width_kms), "INFO", "")
-        casalog.post("... target velocity width: "+str(chan_fine), "INFO", "")
+        casalog.post("... original velocity width: "+str(current_chan_width_kms)+" km/s", "INFO", "")
+        casalog.post("... target velocity width: "+str(chan_fine)+" km/s", "INFO", "")
         casalog.post("... number of channels at this stage: "+str(nchan_for_recenter), "INFO", "")
 
     os.system('rm -rf '+out_file+'.temp'+" > "+log_file+"2>&1")
@@ -848,6 +865,10 @@ def extract_line_for_galaxy(
     about the PHANGS measurement set keys and is specific to our
     projects.
     """
+
+    if just_array == None:
+        just_array = '12m_ext+12m_com+7m'
+    just_array_list = just_array.split('+')
     
     if gal == None:
         if quiet == False:
@@ -897,7 +918,12 @@ def extract_line_for_galaxy(
                             continue
             
             if just_array != None:
-                if this_ms.count(just_array) == 0:
+                just_array_in_this_ms = False
+                for array in just_array_list:
+                    if array in this_ms:
+                        just_array_in_this_ms = True
+                        break
+                if not just_array_in_this_ms:
                     continue
             
             in_file = gal+'_'+this_proj+'_'+this_ms+ext+'.ms'+append_ext
@@ -943,6 +969,10 @@ def calculate_phangs_chanwidth(
     """
 
     one_plus_eps = 1.0+1e-3
+
+    if just_array == None:
+        just_array = '12m_ext+12m_com+7m'
+    just_array_list = just_array.split('+')
 
     if gal == None:
         if quiet == False:
@@ -994,9 +1024,13 @@ def calculate_phangs_chanwidth(
                             continue
             
             # Allow choice of specific array
-
             if just_array != None:
-                if this_ms.count(just_array) == 0:
+                just_array_in_this_ms = False
+                for array in just_array_list:
+                    if array in this_ms:
+                        just_array_in_this_ms = True
+                        break
+                if not just_array_in_this_ms:
                     continue
 
             this_vis = gal+'_'+this_proj+'_'+this_ms+ext+'.ms'+append_ext
@@ -1069,6 +1103,10 @@ def extract_phangs_lines(
     # Could add sio54, which is generally covered in PHANGS but almost
     # always likely to be a nondetection.
 
+    if just_array == None:
+        just_array = '12m_ext+12m_com+7m'
+    just_array_list = just_array.split('+')
+
     if quiet == False:
         casalog.post("--------------------------------------------------------", "INFO", "")
         casalog.post("START: Extracting spectral lines from data set.", "INFO", "")
@@ -1139,6 +1177,9 @@ def concat_phangs_lines(
     sets.
     """
 
+    if just_array == '':
+        just_array = '12m_ext+12m_com+7m'
+
     if quiet == False:
         casalog.post("--------------------------------------------------------", "INFO", "")
         casalog.post("START: Concatenating spectral line measurements.", "INFO", "")
@@ -1146,43 +1187,64 @@ def concat_phangs_lines(
         casalog.post("", "INFO", "")
         casalog.post("Galaxy: "+gal, "INFO", "")
 
-    for line in lines:    
-
-        # Unless we just do the 12m, we build a 7m dataset
-        if just_array != '12m':
+    for line in lines:
+        if (just_array == '7m' or
+            just_array == '12m_com+7m' or
+            just_array == '12m_ext+12m_com+7m'):
             concat_line_for_gal(
                 gal=gal,
-                just_array = '7m',
+                just_array='7m',
                 tag='7m',
                 line=line,
-                do_chan0=True)
-
-        # Unless we just do the 7m, we build a 12m dataset
-        if just_array != '7m':
+                do_chan0=True,
+            )
+        if (just_array == '12m_ext' or
+            just_array == '12m_ext+12m_com' or
+            just_array == '12m_ext+12m_com+7m'):
             concat_line_for_gal(
                 gal=gal,
-                just_array = '12m',
-                tag='12m',
+                just_array='12m_ext',
+                tag='12m_ext',
                 line=line,
-                do_chan0=True)
-
-        # This can probably be improved, but works for now. Check if
-        # we lack either 12m or 7m data, in which case there is no
-        # combined data set to make.
-
-        has_7m = len(glob.glob(gal+'*7m*'+line+'*')) > 0
-        has_12m = len(glob.glob(gal+'*12m*'+line+'*')) > 0
-        if has_12m == False or has_7m == False:
-            casalog.post("Missing 12m or 7m ... no combined set made.", "INFO", "")
-            continue
-
-        if just_array == '' or just_array == None:
+                do_chan0=True,
+            )
+        if (just_array == '12m_com' or
+            just_array == '12m_ext+12m_com' or
+            just_array == '12m_com+7m' or
+            just_array == '12m_ext+12m_com+7m'):
             concat_line_for_gal(
                 gal=gal,
-                just_array = None,
-                tag='12m+7m',
+                just_array='12m_com',
+                tag='12m_com',
                 line=line,
-                do_chan0=True)
+                do_chan0=True,
+            )
+        if (just_array == '12m_ext+12m_com' or
+            just_array == '12m_ext+12m_com+7m'):
+            concat_line_for_gal(
+                gal=gal,
+                just_array='12m_ext+12m_com',
+                tag='12m_ext+12m_com',
+                line=line,
+                do_chan0=True,
+            )
+        if (just_array == '12m_com+7m' or
+            just_array == '12m_ext+12m_com+7m'):
+            concat_line_for_gal(
+                gal=gal,
+                just_array='12m_com+7m',
+                tag='12m_com+7m',
+                line=line,
+                do_chan0=True,
+            )
+        if (just_array == '12m_ext+12m_com+7m'):
+            concat_line_for_gal(
+                gal=gal,
+                just_array='12m_ext+12m_com+7m',
+                tag='12m_ext+12m_com+7m',
+                line=line,
+                do_chan0=True,
+            )
 
     if quiet == False:
         casalog.post("--------------------------------------------------------", "INFO", "")
@@ -2299,7 +2361,7 @@ def clean_loop(
                 
         casalog.post("", "INFO", "")
         casalog.post("******************************", "INFO", "")
-        casalog.plost("CLEAN LOOP "+str(loop), "INFO", "")
+        casalog.post("CLEAN LOOP "+str(loop), "INFO", "")
         casalog.post("... threshold "+clean_call.threshold, "INFO", "")
         casalog.post("... old flux "+str(prev_flux), "INFO", "")
         casalog.post("... new flux "+str(model_flux), "INFO", "")
@@ -2438,13 +2500,21 @@ def buildPhangsCleanCall(
     if array == '7m':
         clean_call.pblimit = 0.25
         clean_call.smallscalebias = 0.6
-        clean_call.scales_as_angle = [0, 5, 10]
-    elif array == '12m':
+        clean_call.scales_as_angle = [0.0, 5.0, 10.0]
+    elif array == '12m_com':
         clean_call.smallscalebias = 0.6
-        clean_call.scales_as_angle = [0, 1, 2.5, 5]
-    elif array == '12m+7m':
+        clean_call.scales_as_angle = [0.0, 1.0, 2.5, 5.0]
+    elif array == '12m_ext':
+        clean_call.scales_as_angle = [0.0, 0.5, 1.0, 2.5]
+    elif array == '12m_com+7m':
         clean_call.smallscalebias = 0.8
-        clean_call.scales_as_angle = [0, 1, 2.5, 5, 10]
+        clean_call.scales_as_angle = [0.0, 1.0, 2.5, 5.0, 10.0]
+    elif array == '12m_ext+12m_com':
+        clean_call.smallscalebias = 0.8
+        clean_call.scales_as_angle = [0.0, 0.5, 1.0, 2.5, 5.0]
+    elif array == '12m_ext+12m_com+7m':
+        clean_call.smallscalebias = 0.8
+        clean_call.scales_as_angle = [0.0, 0.5, 1.0, 2.5, 5.0, 10.0]
 
     # Look up overrides in the imaging parameters
     override_dict = read_override_imaging_params()

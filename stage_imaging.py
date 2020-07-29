@@ -16,34 +16,31 @@ casalog.showconsole(onconsole=False)
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 # ... a list of directories
-data_dirs = [
-    '/home/brunettn/antennae/2018.1.00272.S/'
-    ]
+data_dirs = ['/home/brunettn/antennae/2018.1.00272.S/']
 
 # ... a text list. The script will process only these galaxies.
-
-only = [
-    "ngc_4038_4039"
-    ]
+only = ["ngc_4038_4039"]
 
 # ... skip these galaxies.
-
 skip = []
 
 # ... start with this galaxy
-
 first = ""
 last = ""
 
-# ... set this to '12m' or '7m' to stage data only for those
-# arrays. Leave it as None to process all data. If both 12m and 7m
-# data are processed, then the script will also create 12m+7m data. So
-# you need to rerun the staging when both data sets arrive.
-#
-# This looks like it should be the "array code tag" from the ms_file_key.txt
-# file. -brunettn
-
-just_array = None
+# Set this to specify the array combinations you want to stage. Any that
+# combine arrays/configurations will also stage the individual components
+# as well. For example, '12m_ext_12m_com+7m' will stage 12m_ext_12m_com+7m,
+# 7m, 12m_com, 12m_ext, 12m_com+7m, 12m_ext+12m_com.
+# can be:
+#  - '7m'
+#  - '12m_com'
+#  - '12m_ext'
+#  - '12m_com+7m'
+#  - '12m_ext+12m_com'
+#  - '12m_ext_12m_com+7m'
+#  - None (same as '12m_ext_12m_com+7m')
+just_array = '12m_com+7m'
 
 # List of lines to process. There's not a lot of error catching
 # here. It needs to be a list and it only knows about co21 and c18o21

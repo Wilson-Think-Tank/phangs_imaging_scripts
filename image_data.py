@@ -25,23 +25,29 @@ casalog.showconsole(onconsole=False)
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 # ... a text list. The script will process only these galaxies.
-
-only = [
-    "ngc_4038_4039"
-]
+only = ["ngc_4038_4039"]
 
 # ... skip these galaxies
 skip = []
 
 # ... start with this galaxy
-
 first = ""
 last = ""
 
-# ... set as '12m', '7m', or '12m+7m' to process only data from that
-# array. Leave it as an empty list to process all data.
-
-just_array = ['12m+7m']
+# A list of strings specifing the array combination(s) you want to image.
+# Acceptable options are:
+#  - '7m'
+#  - '12m_com'
+#  - '12m_ext'
+#  - '12m_com+7m'
+#  - '12m_ext+12m_com'
+#  - '12m_ext+12m_com+7m'
+#  - empty list (all of the above)
+just_array = [
+    '7m',
+    '12m_com',
+    '12m_com+7m',
+]
 
 # ... set as the products to be handled. Valid choices for the basic
 # PHANGS data are 'co21', 'c18o21', 'cont', 'co21_chan0', and
@@ -97,10 +103,10 @@ make_dirty_image=True
 forceSquare=False
 revert_to_dirty=False
 read_in_clean_mask=False
-run_multiscale_clean=False
+run_multiscale_clean=True
 revert_to_multiscale=False
-make_singlescale_mask=False
-run_singlescale_clean=False
+make_singlescale_mask=True
+run_singlescale_clean=True
 export_to_fits= True
 
 do_only_new = False
@@ -111,7 +117,14 @@ do_only_new = False
 
 gals = pp.list_gal_names()
 
-array_list = ['12m', '7m', '12m+7m']
+array_list = [
+    '7m',
+    '12m_com',
+    '12m_ext',
+    '12m_com+7m',
+    '12m_ext+12m_com',
+    '12m_ext_12m_com+7m',
+]
 
 product_list = [
     'co10',
@@ -159,7 +172,7 @@ for gal in gals:
     for array in array_list:
 
         if len(just_array) > 0:
-            if just_array.count(array) == 0:
+            if array not in just_array:
                 casalog.post("Skipping "+array, "INFO", "")
                 continue
 

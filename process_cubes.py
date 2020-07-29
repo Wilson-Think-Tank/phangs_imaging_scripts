@@ -9,51 +9,44 @@ import glob
 casalog.showconsole(onconsole=False)
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# Directories and definitions
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-interferometric_array_list = ['12m', '7m', '12m+7m']
-full_array_list = ['12m+7m+tp', '12m+7m', '12m', '7m', '7m+tp']
-full_product_list = ['co21','c18o21','13co21','co10','cn10high','cn10low']
-gal_part_list = pp.list_gal_names()
-dir_key = pp.read_dir_key()
-
-inroot_dir = '../'
-vstring = 'v3_casa'
-outroot_dir = '../release/'+vstring+'/'
-
-cutoff = 0.25
-
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 # ... a text list. The script will process only these galaxies.
-
-#only = []
 only = ["ngc_4038_4039"]
 
 # ... skip these galaxies
 skip = []
 
 # ... start with this galaxy
-
 first = ""
 last = ""
 
-# ... set as '12m', '7m', '7m+tp', '12m+7m', or '12m+7m+tp' to process
-# only data from that array. Leave it as None to process all data.
-
-#just_array = []
-# just_array = ['7m', '7m+tp', '12m+7m','12m+7m+tp']
-just_array = ['7m', '7m+tp']
+# A list of strings specifing the array combination(s) you want to process.
+# Acceptable options are:
+#  - '7m'
+#  - '12m_com'
+#  - '12m_ext'
+#  - '12m_com+7m'
+#  - '12m_ext+12m_com'
+#  - '12m_ext+12m_com+7m'
+#  - '7m+tp'
+#  - '12m_com+7m+tp'
+#  - '12m_ext+12m_com+7m+tp'
+#  - empty list (all of the above)
+just_array = [
+    '7m',
+    '12m_com',
+    '12m_com+7m',
+    '12m_com+7m+tp',
+]
 
 # ... set as the products to be handled. Valid choices for the basic
 # PHANGS data are 'co21', 'c18o21', 'cont', 'co21_chan0', and
 # 'c18o21_chan0'. Note that right now cont and chan0 are not tested.
 # Choices added by cdw are '13co21', 'co10', 'cn10high', and 'cn10low'.
 
-just_product = ['cn10high']
+just_product = ['co21']
 #just_product = ['co21','13co21','c18o21','co10','cn10high','cn10low']
 
 # ... set these variables to indicate what steps of the script should
@@ -68,16 +61,48 @@ primary_beam_correct = True
 convolve_to_round_beam = True
 
 prep_for_feather = True
-feather_data = False
 # only use Chris's new feather order
+feather_data = False
 reverse_feather_data = True
 
 cleanup_cubes = True
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# Wipe and rebuild if requested
+# Directories and definitions
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
+interferometric_array_list = [
+    '7m',
+    '12m_com',
+    '12m_ext',
+    '12m_com+7m',
+    '12m_ext+12m_com',
+    '12m_ext_12m_com+7m',
+]
+full_array_list = [
+    '7m',
+    '12m_com',
+    '12m_ext',
+    '12m_com+7m',
+    '12m_ext+12m_com',
+    '12m_ext+12m_com+7m',
+    '7m+tp',
+    '12m_com+7m+tp',
+    '12m_ext+12m_com+7m+tp',
+]
+full_product_list = ['co21','c18o21','13co21','co10','cn10high','cn10low']
+gal_part_list = pp.list_gal_names()
+dir_key = pp.read_dir_key()
+
+inroot_dir = '../'
+vstring = 'v0'
+outroot_dir = '../release/'+vstring+'/'
+
+cutoff = 0.25
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# Wipe and rebuild if requested
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 if rebuild_directories:
     pcp.rebuild_directories(outroot_dir=outroot_dir)
 
@@ -88,7 +113,7 @@ if rebuild_directories:
 for this_loop in ['stage', 'process', 'feather', 'cleanup']:
     
     casalog.post("", "INFO", "")
-    casalog.pos("Looping over all galaxies and products.", "INFO", "")
+    casalog.post("Looping over all galaxies and products.", "INFO", "")
     casalog.post("... this loop is to: "+this_loop, "INFO", "")
     casalog.post("", "INFO", "")
 
@@ -159,7 +184,9 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                 casalog.post("... ... processing array: "+array, "INFO", "")
 
                 if this_loop == 'stage' and stage_cubes:
-                    if array == "12m+7m+tp" or array == "7m+tp":
+                    if (array == '7m+tp'
+                        or array == '12m_com+7m+tp'
+                        or array == '12m_ext+12m_com+7m+tp'):
                         continue
                     pcp.phangs_stage_cubes(
                         gal=gal_part, array=array, product=product, 
@@ -168,7 +195,9 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         )                        
                     
                 if this_loop == 'process' and primary_beam_correct:
-                    if array == "12m+7m+tp" or array == "7m+tp":
+                    if (array == '7m+tp'
+                        or array == '12m_com+7m+tp'
+                        or array == '12m_ext+12m_com+7m+tp'):
                         continue
                     pcp.phangs_primary_beam_correct(
                         gal=gal_part, array=array, product=product, 
@@ -177,16 +206,23 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         )
 
                 if this_loop == 'process' and convolve_to_round_beam:
-                    if array == "12m+7m+tp" or array == "7m+tp":
+                    if (array == '7m+tp'
+                        or array == '12m_com+7m+tp'
+                        or array == '12m_ext+12m_com+7m+tp'):
                         continue
                     pcp.phangs_convolve_to_round_beam(
                         gal=gal_part, array=array, product=product, 
                         root_dir=outroot_dir,
                         overwrite=True
                         )
-                    
+
                 if this_loop == 'feather' and prep_for_feather:
-                    if array == "12m+7m+tp" or array == "7m+tp":
+                    if (array == '12m_ext'
+                        or array == '12m_com'
+                        or array == '12m_ext+12m_com'
+                        or array == '7m+tp'
+                        or array == '12m_com+7m+tp'
+                        or array == '12m_ext+12m_com+7m+tp'):
                         continue
                     pcp.prep_for_feather(
                         gal=gal_part, array=array, product=product,
@@ -195,7 +231,12 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         )
 
                 if this_loop == 'feather' and feather_data:
-                    if array == "12m+7m+tp" or array == "7m+tp":
+                    if (array == '12m_ext'
+                        or array == '12m_com'
+                        or array == '12m_ext+12m_com'
+                        or array == '7m+tp'
+                        or array == '12m_com+7m+tp'
+                        or array == '12m_ext+12m_com+7m+tp'):
                         continue
                     pcp.phangs_feather_data(
                         gal=gal_part, array=array, product=product,
@@ -204,7 +245,12 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         )
 
                 if this_loop == 'feather' and reverse_feather_data:
-                    if array == "12m+7m+tp" or array == "7m+tp":
+                    if (array == '12m_ext'
+                        or array == '12m_com'
+                        or array == '12m_ext+12m_com'
+                        or array == '7m+tp'
+                        or array == '12m_com+7m+tp'
+                        or array == '12m_ext+12m_com+7m+tp'):
                         continue
                     pcp.chris_feather_data(
                         gal=gal_part, array=array, product=product,
