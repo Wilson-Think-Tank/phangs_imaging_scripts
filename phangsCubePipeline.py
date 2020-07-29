@@ -66,9 +66,9 @@ def rebuild_directories(outroot_dir=None):
     if os.path.isdir(outroot_dir) == False:
         casalog.post("Got make "+outroot_dir+" manually. Then I will make the subdirectories.", "INFO", "")
 
-    for subdir in ['raw/','process/','products/','feather/','delivery/']:
-        os.system('rm -rf '+outroot_dir+'/'+subdir+" > "+log_file+" 2>&1")
-        os.system('mkdir '+outroot_dir+'/'+subdir+" > "+log_file+" 2>&1")
+    for subdir in ['raw/','process/','products/']:
+        os.system('rm -rf '+outroot_dir+subdir+" >> "+log_file+" 2>&1")
+        os.system('mkdir --parents '+outroot_dir+subdir+" >> "+log_file+" 2>&1")
 
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # SET UP THE CUBES
@@ -145,10 +145,10 @@ def phangs_stage_singledish(
                zeroblanks=True, overwrite=overwrite)
 
     if overwrite:
-        os.system('rm -rf '+sdfile_out+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+sdfile_out+" >> "+log_file+" 2>&1")
     imsubimage(imagename=sdfile_out+'.temp', outfile=sdfile_out,
                dropdeg=True)
-    os.system('rm -rf '+sdfile_out+'.temp'+" > "+log_file+" 2>&1")
+    os.system('rm -rf '+sdfile_out+'.temp'+" >> "+log_file+" 2>&1")
 
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # BASIC IMAGE PROCESSING STEPS
@@ -199,7 +199,7 @@ def primary_beam_correct(
         return
 
     if overwrite:
-        os.system('rm -rf '+outfile+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
 
     impbcor(imagename=infile, pbimage=pbfile, outfile=outfile, cutoff=cutoff)
 
@@ -338,7 +338,7 @@ def prep_for_feather(
     # Taper the TP data by the primary beam.
     taperfile_out = root_dir+'process/'+gal+'_tp_'+product+'_taper_'+array+'.image'
     if overwrite:
-        os.system('rm -rf '+taperfile_out+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+taperfile_out+" >> "+log_file+" 2>&1")
 
     impbcor(imagename=sdfile_out, 
             pbimage=pbfile_name, 
@@ -383,8 +383,8 @@ def phangs_feather_data(
         '_flat_round.image'
 
     if overwrite:        
-        os.system('rm -rf '+outfile_name+" > "+log_file+" 2>&1")
-    os.system('rm -rf '+outfile_name+'.temp'+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile_name+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+outfile_name+'.temp'+" >> "+log_file+" 2>&1")
     feather(imagename=outfile_name+'.temp',
             highres=interf_in,
             lowres=sdfile_in,
@@ -392,7 +392,7 @@ def phangs_feather_data(
             lowpassfiltersd=False)
     imsubimage(imagename=outfile_name+'.temp', outfile=outfile_name,
                dropdeg=True)
-    os.system('rm -rf '+outfile_name+'.temp'+" > "+log_file+" 2>&1")
+    os.system('rm -rf '+outfile_name+'.temp'+" >> "+log_file+" 2>&1")
     infile_name = outfile_name
 
     # Primary beam correct the feathered data.
@@ -400,10 +400,10 @@ def phangs_feather_data(
         '_pbcorr_round.image'
     
     if overwrite:        
-        os.system('rm -rf '+outfile_name+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile_name+" >> "+log_file+" 2>&1")
 
     casalog.post(infile_name, "INFO", "")
-    casalog.post(pbfile_name "INFO", "")
+    casalog.post(pbfile_name, "INFO", "")
     impbcor(imagename=infile_name,
             pbimage=pbfile_name, 
             outfile=outfile_name, 
@@ -444,8 +444,8 @@ def chris_feather_data(
         '_pbcorr_round.image'
 
     if overwrite:        
-        os.system('rm -rf '+outfile_name+" > "+log_file+" 2>&1")
-    os.system('rm -rf '+outfile_name+'.temp'+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile_name+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+outfile_name+'.temp'+" >> "+log_file+" 2>&1")
     feather(imagename=outfile_name+'.temp',
             highres=interf_in,
             lowres=sdfile_in,
@@ -453,7 +453,7 @@ def chris_feather_data(
             lowpassfiltersd=False)
     imsubimage(imagename=outfile_name+'.temp', outfile=outfile_name,
                dropdeg=True)
-    os.system('rm -rf '+outfile_name+'.temp'+" > "+log_file+" 2>&1")
+    os.system('rm -rf '+outfile_name+'.temp'+" >> "+log_file+" 2>&1")
     infile_name = outfile_name
 
 # apply primary beam to flatten the feathered data.
@@ -461,7 +461,7 @@ def chris_feather_data(
         '_flat_round.image'
     
     if overwrite:        
-        os.system('rm -rf '+outfile_name+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile_name+" >> "+log_file+" 2>&1")
 
     casalog.post(infile_name, "INFO", "")
     casalog.post(pbfile_name, "INFO", "")
@@ -497,13 +497,13 @@ def convert_jytok(
     
     if inplace == False:
         if overwrite:
-            os.system('rm -rf '+outfile+" > "+log_file+" 2>&1")
+            os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
         
         if os.path.isdir(outfile):
             casalog.post("Output file already present: "+outfile, "SEVERE", "")
             return
 
-        os.system('cp -r '+infile+' '+outfile+" > "+log_file+" 2>&1")
+        os.system('cp -r '+infile+' '+outfile+" >> "+log_file+" 2>&1")
         target_file = outfile
     else:
         target_file = infile
@@ -596,7 +596,7 @@ def trim_cube(
             overwrite=overwrite,
             )
     else:
-        os.system('cp -r '+infile+' '+outfile+'.temp'+" > "+log_file+" 2>&1")
+        os.system('cp -r '+infile+' '+outfile+'.temp'+" >> "+log_file+" 2>&1")
 
     # Figure out the extent of the image inside the cube
     myia = au.createCasaTool(iatool)
@@ -626,7 +626,7 @@ def trim_cube(
     casalog.post("... ... ... channel selection: "+chan_string, "INFO", "")
 
     if overwrite:
-        os.system('rm -rf '+outfile+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
         imsubimage(
         imagename=outfile+'.temp',
         outfile=outfile,
@@ -634,7 +634,7 @@ def trim_cube(
         chans=chan_string,
         )
     
-    os.system('rm -rf '+outfile+'.temp'+" > "+log_file+" 2>&1")
+    os.system('rm -rf '+outfile+'.temp'+" >> "+log_file+" 2>&1")
     
 def phangs_cleanup_cubes(
         gal=None, array=None, product=None, root_dir=None, 
@@ -655,7 +655,7 @@ def phangs_cleanup_cubes(
     
     if os.path.isdir(root_dir+'products/'+gal+'/') == False:
         casalog.post("Making product sudirectory for  "+gal, "INFO", "")
-        os.system('mkdir '+root_dir+'products/'+gal+'/'+" > "+log_file+" 2>&1")
+        os.system('mkdir '+root_dir+'products/'+gal+'/'+" >> "+log_file+" 2>&1")
 
     for this_ext in ['flat', 'pbcorr']:
 
@@ -815,7 +815,7 @@ def phangs_cleanup_pbcubes(
                 overwrite=overwrite,
                 )
         else:
-            os.system('cp -r '+infile+' '+outfile+'.temp'+" > "+log_file+" 2>&1")
+            os.system('cp -r '+infile+' '+outfile+'.temp'+" >> "+log_file+" 2>&1")
 
     # Figure out the extent of the image inside the cube
         myia = au.createCasaTool(iatool)
@@ -845,7 +845,7 @@ def phangs_cleanup_pbcubes(
         casalog.post("... ... ... channel selection: "+chan_string, "INFO", "")
 
         if overwrite:
-            os.system('rm -rf '+outfile+" > "+log_file+" 2>&1")
+            os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
             imsubimage(
                 imagename=outfile+'.temp',
                 outfile=outfile,
@@ -853,7 +853,7 @@ def phangs_cleanup_pbcubes(
                 chans=chan_string,
                 )
     
-        os.system('rm -rf '+outfile+'.temp'+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile+'.temp'+" >> "+log_file+" 2>&1")
     
         # Export to FITS
     
@@ -1208,11 +1208,11 @@ def mosaic_aligned_data(
         return
 
     if overwrite:
-        os.system('rm -rf '+outfile+'.temp'+" > "+log_file+" 2>&1")
-        os.system('rm -rf '+outfile+" > "+log_file+" 2>&1")
-        os.system('rm -rf '+sum_file+" > "+log_file+" 2>&1")
-        os.system('rm -rf '+weight_file+" > "+log_file+" 2>&1")
-        os.system('rm -rf '+outfile+'.mask'+" > "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile+'.temp'+" >> "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
+        os.system('rm -rf '+sum_file+" >> "+log_file+" 2>&1")
+        os.system('rm -rf '+weight_file+" >> "+log_file+" 2>&1")
+        os.system('rm -rf '+outfile+'.mask'+" >> "+log_file+" 2>&1")
 
     imlist = infile_list[:]
     imlist.extend(weightfile_list)

@@ -90,7 +90,7 @@ def copy_data(gal=None,
     # Make the output directory if it's missing
     if os.path.isdir(this_dir) == False:
         casalog.post("Directory "+this_dir+" not found. Making it.", "INFO", "")
-        os.system('mkdir '+this_dir+" > "+log_file+"2>&1")
+        os.system('mkdir '+this_dir+" >> "+log_file+" 2>&1")
     
     os.chdir(this_dir)
 
@@ -163,15 +163,15 @@ def copy_data(gal=None,
             # the intermediate files and then clean them up. This
             # avoids "touching" the original data at all.
 
-            os.system('rm -rf '+copied_file+" > "+log_file+"2>&1")
-            os.system('rm -rf '+copied_file+'.flagversions'+" > "+log_file+"2>&1")
+            os.system('rm -rf '+copied_file+" >> "+log_file+" 2>&1")
+            os.system('rm -rf '+copied_file+'.flagversions'+" >> "+log_file+" 2>&1")
 
-            command = 'cp -Lr '+in_file+' '+copied_file+" > "+log_file+"2>&1"
+            command = 'cp -Lr '+in_file+' '+copied_file+" >> "+log_file+" 2>&1"
             casalog.post(command, "INFO", "")
             var = os.system(command)    
             casalog.post(str(var), "INFO", "")
 
-            command = 'cp -Lr '+in_file+'.flagversions'+' '+copied_file+'.flagversions'+" > "+log_file+"2>&1"
+            command = 'cp -Lr '+in_file+'.flagversions'+' '+copied_file+'.flagversions'+" >> "+log_file+" 2>&1"
             casalog.post(command, "INFO", "")
             var = os.system(command)
             casalog.post(str(var), "INFO", "")
@@ -185,8 +185,8 @@ def copy_data(gal=None,
 
                 out_file = gal+'_'+this_proj+'_'+this_ms+'.ms'
 
-                os.system('rm -rf '+out_file+" > "+log_file+"2>&1")
-                os.system('rm -rf '+out_file+'.flagversions'+" > "+log_file+"2>&1")
+                os.system('rm -rf '+out_file+" >> "+log_file+" 2>&1")
+                os.system('rm -rf '+out_file+'.flagversions'+" >> "+log_file+" 2>&1")
                 
                 # If present, we use the corrected column. If not,
                 # then we use the data column.
@@ -207,8 +207,8 @@ def copy_data(gal=None,
                       , datacolumn=use_column
                       , outputvis=out_file)        
 
-                os.system('rm -rf '+copied_file+" > "+log_file+"2>&1")
-                os.system('rm -rf '+copied_file+'.flagversions'+" > "+log_file+"2>&1")
+                os.system('rm -rf '+copied_file+" >> "+log_file+" 2>&1")
+                os.system('rm -rf '+copied_file+'.flagversions'+" >> "+log_file+" 2>&1")
 
             if do_statwt:
 
@@ -312,8 +312,8 @@ def concat_line_for_gal(
     else:
         out_file =  gal+'_'+line+'.ms'
 
-    os.system('rm -rf '+out_file+" > "+log_file+"2>&1")
-    os.system('rm -rf '+out_file+'.flagversions'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+out_file+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+'.flagversions'+" >> "+log_file+" 2>&1")
 
     concat(vis=files_to_concat,
            concatvis=out_file)
@@ -330,8 +330,8 @@ def concat_line_for_gal(
     else:
         chan0_vis = gal+'_'+line+'_chan0.ms'
 
-    os.system('rm -rf '+chan0_vis+" > "+log_file+"2>&1")
-    os.system('rm -rf '+chan0_vis+'.flagversions'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+chan0_vis+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+chan0_vis+'.flagversions'+" >> "+log_file+" 2>&1")
     split(vis=out_file
           , datacolumn='DATA'
           , spw=''
@@ -413,8 +413,8 @@ def concat_cont_for_gal(
     else:
         out_file =  gal+'_cont.ms'
 
-    os.system('rm -rf '+out_file+" > "+log_file+"2>&1")
-    os.system('rm -rf '+out_file+'.flagversions'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+out_file+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+'.flagversions'+" >> "+log_file+" 2>&1")
 
     concat(vis=files_to_concat,
            concatvis=out_file)
@@ -725,8 +725,8 @@ def extract_line(in_file=None,
         casalog.post("... target velocity width: "+str(chan_fine)+" km/s", "INFO", "")
         casalog.post("... number of channels at this stage: "+str(nchan_for_recenter), "INFO", "")
 
-    os.system('rm -rf '+out_file+'.temp'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+out_file+'.temp.flagversions'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+out_file+'.temp'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+'.temp.flagversions'+" >> "+log_file+" 2>&1")
     if chan_fine == -1:
         mstransform(vis=in_file,
                     outputvis=out_file+'.temp',
@@ -772,8 +772,8 @@ def extract_line(in_file=None,
         casalog.post("... rebinning factor: "+str(rebin_factor), "INFO", "")
 
     if rebin_factor > 1:
-        os.system('rm -rf '+out_file+'.temp2'+" > "+log_file+"2>&1")
-        os.system('rm -rf '+out_file+'.temp2.flagversions'+" > "+log_file+"2>&1")
+        os.system('rm -rf '+out_file+'.temp2'+" >> "+log_file+" 2>&1")
+        os.system('rm -rf '+out_file+'.temp2.flagversions'+" >> "+log_file+" 2>&1")
         mstransform(vis=current_file,
                     outputvis=out_file+'.temp2',
                     spw='',
@@ -791,8 +791,8 @@ def extract_line(in_file=None,
     if quiet == False:
         casalog.post("... combining spectral windows", "INFO", "")
 
-    os.system('rm -rf '+out_file+" > "+log_file+"2>&1")
-    os.system('rm -rf '+out_file+'.flagversions'+" > "+log_file+"2>&1") 
+    os.system('rm -rf '+out_file+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+'.flagversions'+" >> "+log_file+" 2>&1") 
     mstransform(vis=current_file,
                 outputvis=out_file,
                 spw='',
@@ -806,10 +806,10 @@ def extract_line(in_file=None,
         casalog.post("... deleting old files", "INFO", "")
         
     # Clean up
-    os.system('rm -rf '+out_file+'.temp'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+out_file+'.temp.flagversions'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+out_file+'.temp2'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+out_file+'.temp2.flagversions'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+out_file+'.temp'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+'.temp.flagversions'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+'.temp2'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+'.temp2.flagversions'+" >> "+log_file+" 2>&1")
 
     # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
     # STEP 4. Re-weight the data using statwt
@@ -1334,7 +1334,7 @@ def contsub(
 
     casalog.post("... proposed channels to avoid "+spw_flagging_string, "INFO", "")
 
-    os.system('rm -rf '+in_file+'.contsub'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+in_file+'.contsub'+" >> "+log_file+" 2>&1")
     uvcontsub(vis=in_file,
               fitspw=spw_flagging_string,
               excludechans=True)
@@ -1383,10 +1383,10 @@ def extract_continuum(
 
     # Make a continuum copy of the data
 
-    os.system('rm -rf '+out_file+" > "+log_file+"2>&1")
-    os.system('rm -rf '+out_file+'.flagversions'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+out_file+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+'.flagversions'+" >> "+log_file+" 2>&1")
 
-    command = 'cp -r -H '+in_file+' '+out_file+" > "+log_file+"2>&1"
+    command = 'cp -r -H '+in_file+' '+out_file+" >> "+log_file+" 2>&1"
     casalog.post(command, "INFO", "")
     var = os.system(command)
     casalog.post(str(var), "INFO", "")
@@ -1455,15 +1455,15 @@ def extract_continuum(
     if do_collapse:
         casalog.post("... Collapsing the continuum to a single channel.", "INFO", "")
 
-        os.system('rm -rf '+out_file+'.temp_copy'+" > "+log_file+"2>&1")
-        os.system('rm -rf '+out_file+'.temp_copy.flagversions'+" > "+log_file+"2>&1")
+        os.system('rm -rf '+out_file+'.temp_copy'+" >> "+log_file+" 2>&1")
+        os.system('rm -rf '+out_file+'.temp_copy.flagversions'+" >> "+log_file+" 2>&1")
 
-        command = 'mv '+out_file+' '+out_file+'.temp_copy'+" > "+log_file+"2>&1"
+        command = 'mv '+out_file+' '+out_file+'.temp_copy'+" >> "+log_file+" 2>&1"
         casalog.post(command, "INFO", "")
         var = os.system(command)
         casalog.post(str(var), "INFO", "")
 
-        command = 'mv '+out_file+'.flagversions '+out_file+'.temp_copy.flagversions'+" > "+log_file+"2>&1"
+        command = 'mv '+out_file+'.flagversions '+out_file+'.temp_copy.flagversions'+" >> "+log_file+" 2>&1"
         casalog.post(command, "INFO", "")
         var = os.system(command)
         casalog.post(str(var), "INFO", "")
@@ -1474,8 +1474,8 @@ def extract_continuum(
               datacolumn='DATA',
               keepflags=False)        
 
-        os.system('rm -rf '+out_file+'.temp_copy'+" > "+log_file+"2>&1")
-        os.system('rm -rf '+out_file+'.temp_copy.flagversions'+" > "+log_file+"2>&1")
+        os.system('rm -rf '+out_file+'.temp_copy'+" >> "+log_file+" 2>&1")
+        os.system('rm -rf '+out_file+'.temp_copy.flagversions'+" >> "+log_file+" 2>&1")
         
     return    
 
@@ -1726,14 +1726,14 @@ def save_copy_of_cube(
 
     wipe_cube(output_root)
     
-    os.system('cp -r '+input_root+'.image '+output_root+'.image'+" > "+log_file+"2>&1")
-    os.system('cp -r '+input_root+'.model '+output_root+'.model'+" > "+log_file+"2>&1")
-    os.system('cp -r '+input_root+'.mask '+output_root+'.mask'+" > "+log_file+"2>&1")
-    os.system('cp -r '+input_root+'.pb '+output_root+'.pb'+" > "+log_file+"2>&1")
-    os.system('cp -r '+input_root+'.psf '+output_root+'.psf'+" > "+log_file+"2>&1")
-    os.system('cp -r '+input_root+'.residual '+output_root+'.residual'+" > "+log_file+"2>&1")
-    os.system('cp -r '+input_root+'.psf '+output_root+'.weight'+" > "+log_file+"2>&1")
-    os.system('cp -r '+input_root+'.residual '+output_root+'.sumwt'+" > "+log_file+"2>&1")
+    os.system('cp -r '+input_root+'.image '+output_root+'.image'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+input_root+'.model '+output_root+'.model'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+input_root+'.mask '+output_root+'.mask'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+input_root+'.pb '+output_root+'.pb'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+input_root+'.psf '+output_root+'.psf'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+input_root+'.residual '+output_root+'.residual'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+input_root+'.psf '+output_root+'.weight'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+input_root+'.residual '+output_root+'.sumwt'+" >> "+log_file+" 2>&1")
 
 def wipe_cube(
     cube_root=None):
@@ -1745,14 +1745,14 @@ def wipe_cube(
 
     if cube_root == None:
         return
-    os.system('rm -rf '+cube_root+'.image'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+cube_root+'.model'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+cube_root+'.mask'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+cube_root+'.pb'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+cube_root+'.psf'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+cube_root+'.residual'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+cube_root+'.weight'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+cube_root+'.sumwt'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+cube_root+'.image'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+cube_root+'.model'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+cube_root+'.mask'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+cube_root+'.pb'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+cube_root+'.psf'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+cube_root+'.residual'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+cube_root+'.weight'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+cube_root+'.sumwt'+" >> "+log_file+" 2>&1")
 
 def replace_cube_with_copy(
     to_root=None,
@@ -1765,14 +1765,14 @@ def replace_cube_with_copy(
 
     wipe_cube(to_root)
 
-    os.system('cp -r '+from_root+'.image '+to_root+'.image'+" > "+log_file+"2>&1")
-    os.system('cp -r '+from_root+'.model '+to_root+'.model'+" > "+log_file+"2>&1")
-    os.system('cp -r '+from_root+'.mask '+to_root+'.mask'+" > "+log_file+"2>&1")
-    os.system('cp -r '+from_root+'.pb '+to_root+'.pb'+" > "+log_file+"2>&1")
-    os.system('cp -r '+from_root+'.psf '+to_root+'.psf'+" > "+log_file+"2>&1")
-    os.system('cp -r '+from_root+'.residual '+to_root+'.residual'+" > "+log_file+"2>&1")
-    os.system('cp -r '+from_root+'.psf '+to_root+'.weight'+" > "+log_file+"2>&1")
-    os.system('cp -r '+from_root+'.residual '+to_root+'.sumwt'+" > "+log_file+"2>&1")
+    os.system('cp -r '+from_root+'.image '+to_root+'.image'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+from_root+'.model '+to_root+'.model'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+from_root+'.mask '+to_root+'.mask'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+from_root+'.pb '+to_root+'.pb'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+from_root+'.psf '+to_root+'.psf'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+from_root+'.residual '+to_root+'.residual'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+from_root+'.psf '+to_root+'.weight'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+from_root+'.residual '+to_root+'.sumwt'+" >> "+log_file+" 2>&1")
 
 def import_and_align_mask(  
     in_file=None,
@@ -1787,13 +1787,13 @@ def import_and_align_mask(
     log_file = casalog.logfile()
 
     # Import from FITS (could make optional)
-    os.system('rm -rf '+out_file+'.temp_copy'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+out_file+'.temp_copy'+" >> "+log_file+" 2>&1")
     importfits(fitsimage=in_file, 
                imagename=out_file+'.temp_copy'
                , overwrite=True)
 
     # Align to the template grid
-    os.system('rm -rf '+out_file+'.temp_aligned'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+out_file+'.temp_aligned'+" >> "+log_file+" 2>&1")
     imregrid(imagename=out_file+'.temp_copy', 
              template=template, 
              output=out_file+'.temp_aligned', 
@@ -1803,7 +1803,7 @@ def import_and_align_mask(
              overwrite=True)
 
     # Make an EXACT copy of the template, avoids various annoying edge cases
-    os.system('rm -rf '+out_file+" > "+log_file+"2>&1")
+    os.system('rm -rf '+out_file+" >> "+log_file+" 2>&1")
     myim = au.createCasaTool(imtool)
     myim.mask(image=template, mask=out_file)
 
@@ -1833,8 +1833,8 @@ def import_and_align_mask(
     else:
         casalog.post("ALERT! Did not find a case.", "SEVERE", "")
 
-    os.system('rm -rf '+out_file+'.temp_copy'+" > "+log_file+"2>&1")
-    os.system('rm -rf '+out_file+'.temp_aligned'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+out_file+'.temp_copy'+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+'.temp_aligned'+" >> "+log_file+" 2>&1")
     return
 
 def apply_additional_mask(
@@ -1945,8 +1945,8 @@ def signal_mask(
     if operation == 'NEW':
         mask = mask
 
-    os.system('rm -rf '+cube_root+'.mask'+" > "+log_file+"2>&1")
-    os.system('cp -r '+cube_root+'.image '+cube_root+'.mask'+" > "+log_file+"2>&1")
+    os.system('rm -rf '+cube_root+'.mask'+" >> "+log_file+" 2>&1")
+    os.system('cp -r '+cube_root+'.image '+cube_root+'.mask'+" >> "+log_file+" 2>&1")
     myia.open(cube_root+'.mask')
     myia.putchunk(mask.astype(int))
     myia.close()
