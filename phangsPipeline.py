@@ -419,6 +419,43 @@ def concat_cont_for_gal(
     concat(vis=files_to_concat,
            concatvis=out_file)
 
+def subtract_phangs_continuum(   
+    gal=None,
+    just_array=None,
+    ext='',
+    quiet=False,
+    append_ext='',
+    ):
+    """
+    Subtract all continuum for a galaxy, avoiding all CO
+    and CN lines known to the line list.
+    """
+
+    if quiet == False:
+        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("START: Subtracting continuum from data set.", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "")
+
+    # The list of lines to avoid in continuum subtraction.
+    # Default for PHANGS is to flag only
+    # the CO lines before extracting the continuum.
+
+    lines_to_flag = line_list.lines_co+line_list.lines_13co+line_list.lines_c18o+line_list.lines_cn
+
+    subtract_continuum_for_galaxy(   
+        gal=gal,
+        just_array=just_array,
+        lines_to_flag=lines_to_flag,
+        ext=ext,
+        quiet=quiet,
+        append_ext=append_ext,
+        )
+
+    if quiet == False:
+        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("END: Subtracting continuum from data set.", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "")
+
 def extract_phangs_continuum(   
     gal=None,
     just_array=None,
@@ -1479,6 +1516,97 @@ def extract_continuum(
         
     return    
 
+def subtract_continuum(
+    in_file=None,
+    lines_to_flag=None,
+    gal=None,
+    vsys=0.0,
+    vwidth=500.,
+    quiet=False):
+    """
+    Subtract continuum from a measurement set.
+    Modified from "extract_continuum" function.
+    """
+
+    log_file = casalog.logfile()
+
+    sol_kms = 2.99e5
+
+    # Set up the input file
+
+    if os.path.isdir(in_file) == False:
+        if quiet == False:
+            casalog.post("Input file not found: "+in_file, "SEVERE", "")
+        return
+
+    # pull the parameters from the galaxy in the mosaic file
+
+    if gal != None:
+        mosaic_parms = read_mosaic_key()
+        if mosaic_parms.has_key(gal):
+            vsys = mosaic_parms[gal]['vsys']
+            vwidth = mosaic_parms[gal]['vwidth']
+
+    # set the list of lines to flag
+
+    if lines_to_flag == None:
+        lines_to_flag = line_list.lines_co + line_list.lines_13co + line_list.lines_c18o + line_list.lines_cn
+
+    # Figure out the line channels to exclude from contsub
+
+    vm = au.ValueMapping(in_file)
+
+    spw_flagging_string = ''
+    first = True
+    for spw in vm.spwInfo.keys():
+        this_spw_string = str(spw)+':0'
+        if first:
+            spw_flagging_string += this_spw_string
+            first = False
+        else:
+            spw_flagging_string += ','+this_spw_string            
+
+    for line in lines_to_flag:
+        rest_linefreq_ghz = line_list.line_list[line]
+
+        shifted_linefreq_hz = rest_linefreq_ghz*(1.-vsys/sol_kms)*1e9
+        hi_linefreq_hz = rest_linefreq_ghz*(1.-(vsys-vwidth/2.0)/sol_kms)*1e9
+        lo_linefreq_hz = rest_linefreq_ghz*(1.-(vsys+vwidth/2.0)/sol_kms)*1e9
+
+        spw_list = au.getScienceSpwsForFrequency(in_file,
+                                                 shifted_linefreq_hz)
+        if spw_list == []:
+            continue
+
+        casalog.post("Found overlap for "+line, "INFO", "")
+        for this_spw in spw_list:
+            freq_ra = vm.spwInfo[this_spw]['chanFreqs']
+            chan_ra = np.arange(len(freq_ra))
+            to_flag = (freq_ra >= lo_linefreq_hz)*(freq_ra <= hi_linefreq_hz)
+            to_flag[np.argmin(np.abs(freq_ra - shifted_linefreq_hz))]
+            low_chan = np.min(chan_ra[to_flag])
+            hi_chan = np.max(chan_ra[to_flag])                
+            this_spw_string = str(this_spw)+':'+str(low_chan)+'~'+str(hi_chan)
+            if first:
+                spw_flagging_string += this_spw_string
+                first = False
+            else:
+                spw_flagging_string += ','+this_spw_string
+        
+    casalog.post("... proposed line exclusion "+spw_flagging_string, "INFO", "")
+
+    os.system('rm -rf '+in_file+'.contsub'+" >> "+log_file+" 2>&1")
+    uvcontsub(vis=in_file,
+          field='',
+          fitspw=spw_flagging_string,
+          excludechans=True,
+          solint='int',
+          fitorder=1,
+          combine='spw',
+          spw='')
+        
+    return
+
 def extract_continuum_for_galaxy(   
     gal=None,
     just_proj=None,
@@ -1557,6 +1685,81 @@ def extract_continuum_for_galaxy(
                 gal=gal,
                 do_statwt=do_statwt,
                 do_collapse=do_collapse)
+
+    return
+
+def subtract_continuum_for_galaxy(   
+    gal=None,
+    just_proj=None,
+    just_ms=None,
+    just_array=None,
+    lines_to_flag=None,
+    ext='',
+    quiet=False,
+    append_ext='',
+    ):
+    """
+    Subtract continuum for all data sets for a galaxy. This knows about
+    the PHANGS measurement set keys and is specific to our projects.
+    """
+    
+    if gal == None:
+        if quiet == False:
+            casalog.post("Please specify a galaxy.", "SEVERE", "")
+        return
+
+    ms_key = read_ms_key()
+
+    if ms_key.has_key(gal) == False:
+        if quiet == False:
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
+        return
+    gal_specific_key = ms_key[gal]
+
+    # Look up the galaxy specific parameters
+
+    mosaic_parms = read_mosaic_key()
+    if mosaic_parms.has_key(gal):
+        vsys = mosaic_parms[gal]['vsys']
+        vwidth = mosaic_parms[gal]['vwidth']
+
+    # Change to the right directory
+
+    this_dir = dir_for_gal(gal)
+    os.chdir(this_dir)
+
+    # Loop over all projects and measurement sets
+
+    for this_proj in gal_specific_key.keys():
+
+        if just_proj != None:
+            if type(just_proj) == type([]):
+                if just_proj.count(this_proj) == 0:
+                    continue
+            else:
+                if this_proj != just_proj:
+                    continue
+
+        proj_specific_key = gal_specific_key[this_proj]
+        for this_ms in proj_specific_key.keys():
+            if just_ms != None:
+                if type(just_ms) == type([]):
+                    if just_ms.count(this_ms) == 0:
+                        continue
+                    else:
+                        if this_ms != just_ms:
+                            continue
+            
+            if just_array != None:
+                if this_ms.count(just_array) == 0:
+                    continue
+            
+            in_file = gal+'_'+this_proj+'_'+this_ms+ext+'.ms'+append_ext
+
+            subtract_continuum(
+                in_file=in_file,
+                lines_to_flag=lines_to_flag,
+                gal=gal)
 
     return
 

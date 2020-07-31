@@ -79,6 +79,7 @@ lines = ['co21']
 
 do_copy = True
 do_custom_scripts = False
+do_subtract_cont = True
 do_extract_lines = True
 do_concat_lines = True
 do_extract_cont = False
@@ -152,6 +153,19 @@ for gal in gals:
         scripts_for_this_gal = glob.glob('../scripts/custom_staging_scripts/'+gal+'_staging_script.py')
         for this_script in scripts_for_this_gal:
             execfile(this_script)
+
+    # Subtract the continuum, avoiding lines and averaging all
+    # frequencies in each SPW together. This step also uses statwt to
+    # empirically weight the data.
+
+    if do_subtract_cont:
+        pp.subtract_phangs_continuum(
+            gal=gal,
+            just_array=just_array,
+            quiet=False,
+            append_ext=cont_ext)
+
+        line_ext = '.contsub'
 
     # Extract lines, includes regridding and rebinning to the velocity
     # grid specified in the text file keys. Runs statwt afterwards,
