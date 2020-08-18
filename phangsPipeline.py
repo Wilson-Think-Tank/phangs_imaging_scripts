@@ -65,6 +65,7 @@ def copy_data(gal=None,
     text file ms_key.txt. Then splits out only the science target.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     if just_array == None:
@@ -73,14 +74,14 @@ def copy_data(gal=None,
 
     if gal == None:
         if quiet == False:
-            casalog.post("Please specify a galaxy.", "SEVERE", "")
+            casalog.post("Please specify a galaxy.", "SEVERE", "copy_data")
         return
 
     ms_key = read_ms_key()
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
-            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "copy_data")
         return
     gal_specific_key = ms_key[gal]
 
@@ -89,17 +90,17 @@ def copy_data(gal=None,
     
     # Make the output directory if it's missing
     if os.path.isdir(this_dir) == False:
-        casalog.post("Directory "+this_dir+" not found. Making it.", "INFO", "")
+        casalog.post("Directory "+this_dir+" not found. Making it.", "INFO", "copy_data")
         os.system('mkdir '+this_dir+" >> "+log_file+" 2>&1")
     
     os.chdir(this_dir)
 
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("START: Copying the original data.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "copy_data")
+        casalog.post("START: Copying the original data.", "INFO", "copy_data")
+        casalog.post("--------------------------------------------------------", "INFO", "copy_data")
 
-        casalog.post("Galaxy: "+gal, "INFO", "")
+        casalog.post("Galaxy: "+gal, "INFO", "copy_data")
 
     # Loop over files in the measurement set key
 
@@ -131,8 +132,8 @@ def copy_data(gal=None,
                 if not just_array_in_this_ms:
                     continue
             
-            casalog.post("Project: "+this_proj, "INFO", "")
-            casalog.post("Measurement set: "+this_ms, "INFO", "")
+            casalog.post("Project: "+this_proj, "INFO", "copy_data")
+            casalog.post("Measurement set: "+this_ms, "INFO", "copy_data")
 
             # Identify the input file, checking for its existence in
             # any of the various root directories.
@@ -145,8 +146,8 @@ def copy_data(gal=None,
 
             # We didn't find the file. Alarm and continue to the next file.
             if in_file == None:
-                casalog.post('File '+proj_specific_key[this_ms]+' not found.', 'SEVERE', '')
-                casalog.post('Continuing to next file.', 'INFO', '')
+                casalog.post('File '+proj_specific_key[this_ms]+' not found.', 'SEVERE', 'phangsPipeline.copy_data')
+                casalog.post('Continuing to next file.', 'INFO', 'phangsPipeline.copy_data')
                 continue
 
             # Set up a copy command, overwriting previous versions. If
@@ -167,21 +168,21 @@ def copy_data(gal=None,
             os.system('rm -rf '+copied_file+'.flagversions'+" >> "+log_file+" 2>&1")
 
             command = 'cp -Lr '+in_file+' '+copied_file+" >> "+log_file+" 2>&1"
-            casalog.post(command, "INFO", "")
+            casalog.post(command, "INFO", "copy_data")
             var = os.system(command)    
-            casalog.post(str(var), "INFO", "")
+            casalog.post(str(var), "INFO", "copy_data")
 
             command = 'cp -Lr '+in_file+'.flagversions'+' '+copied_file+'.flagversions'+" >> "+log_file+" 2>&1"
-            casalog.post(command, "INFO", "")
+            casalog.post(command, "INFO", "copy_data")
             var = os.system(command)
-            casalog.post(str(var), "INFO", "")
+            casalog.post(str(var), "INFO", "copy_data")
 
             # Call split and statwt if desired.
 
             if do_split:
 
                 if quiet == False:
-                    casalog.post("Splitting out science target data.", "INFO", "")
+                    casalog.post("Splitting out science target data.", "INFO", "copy_data")
 
                 out_file = gal+'_'+this_proj+'_'+this_ms+'.ms'
 
@@ -195,10 +196,10 @@ def copy_data(gal=None,
                 mytb.open(copied_file)
                 colnames = mytb.colnames()
                 if colnames.count('CORRECTED_DATA') == 1:
-                    casalog.post("Data has a CORRECTED column. Will use that.", "INFO", "")
+                    casalog.post("Data has a CORRECTED column. Will use that.", "INFO", "copy_data")
                     use_column = 'CORRECTED'
                 else:
-                    casalog.post("Data lacks a CORRECTED column. Will use DATA column.", "INFO", "")
+                    casalog.post("Data lacks a CORRECTED column. Will use DATA column.", "INFO", "copy_data")
                     use_column = 'DATA'
                 mytb.close()
 
@@ -213,15 +214,15 @@ def copy_data(gal=None,
             if do_statwt:
 
                 if quiet == False:
-                    casalog.post("Using statwt to re-weight the data.", "INFO", "")
+                    casalog.post("Using statwt to re-weight the data.", "INFO", "copy_data")
 
                 statwt(vis=out_file,
                        datacolumn='DATA')
 
     if quiet ==False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("END: Copying data from original location.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "copy_data")
+        casalog.post("END: Copying data from original location.", "INFO", "copy_data")
+        casalog.post("--------------------------------------------------------", "INFO", "copy_data")
 
 def concat_line_for_gal(
     gal=None,
@@ -236,6 +237,7 @@ def concat_line_for_gal(
     Combine all measurement sets for one line and one galaxy.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     if just_array == None:
@@ -253,14 +255,14 @@ def concat_line_for_gal(
 
     if gal == None:
         if quiet == False:
-            casalog.post("Please specify a galaxy.", "SEVERE", "")
+            casalog.post("Please specify a galaxy.", "SEVERE", "concat_line_for_gal")
         return
 
     ms_key = read_ms_key()
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
-            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "concat_line_for_gal")
         return
     gal_specific_key = ms_key[gal]
 
@@ -300,7 +302,7 @@ def concat_line_for_gal(
             files_to_concat.append(this_in_file)
 
     if len(files_to_concat) == 0:
-        casalog.post("No files to concatenate found. Returning.", "WARN", "")
+        casalog.post("No files to concatenate found. Returning.", "WARN", "concat_line_for_gal")
         return
 
     # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
@@ -350,20 +352,21 @@ def concat_cont_for_gal(
     """
     pass
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     # Identify the data sets to combine
 
     if gal == None:
         if quiet == False:
-            casalog.post("Please specify a galaxy.", "SEVERE", "")
+            casalog.post("Please specify a galaxy.", "SEVERE", "concat_cont_for_gal")
         return
 
     ms_key = read_ms_key()
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
-            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "concat_cont_for_gal")
         return
     gal_specific_key = ms_key[gal]
 
@@ -403,7 +406,7 @@ def concat_cont_for_gal(
             files_to_concat.append(this_in_file)
 
     if len(files_to_concat) == 0:
-        casalog.post("No files to concatenate found. Returning.", "WARN", "")
+        casalog.post("No files to concatenate found. Returning.", "WARN", "concat_cont_for_gal")
         return
 
     # Concatenate all of the relevant files
@@ -431,10 +434,12 @@ def subtract_phangs_continuum(
     and CN lines known to the line list.
     """
 
+    casalog.origin("phangsPipeline")
+
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("START: Subtracting continuum from data set.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "subtract_phangs_continuum")
+        casalog.post("START: Subtracting continuum from data set.", "INFO", "subtract_phangs_continuum")
+        casalog.post("--------------------------------------------------------", "INFO", "subtract_phangs_continuum")
 
     # The list of lines to avoid in continuum subtraction.
     # Default for PHANGS is to flag only
@@ -452,9 +457,9 @@ def subtract_phangs_continuum(
         )
 
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("END: Subtracting continuum from data set.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "subtract_phangs_continuum")
+        casalog.post("END: Subtracting continuum from data set.", "INFO", "subtract_phangs_continuum")
+        casalog.post("--------------------------------------------------------", "INFO", "subtract_phangs_continuum")
 
 def extract_phangs_continuum(   
     gal=None,
@@ -469,10 +474,12 @@ def extract_phangs_continuum(
     lines known to the line list.
     """
 
+    casalog.origin("phangsPipeline")
+
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("START: Extracting continuum from data set.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "extract_phangs_continuum")
+        casalog.post("START: Extracting continuum from data set.", "INFO", "extract_phangs_continuum")
+        casalog.post("--------------------------------------------------------", "INFO", "extract_phangs_continuum")
 
     # The list of lines to flag. Default for PHANGS is to flag only
     # the CO lines before extracting the continuum.
@@ -497,9 +504,9 @@ def extract_phangs_continuum(
         )
 
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "extract_phangs_continuum")
         casalog.post("END: Extracting continuum from data set.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "extract_phangs_continuum")
 
 def concat_phangs_continuum(   
     gal=None,
@@ -511,10 +518,12 @@ def concat_phangs_continuum(
     or part of galaxy.
     """
 
+    casalog.origin("phangsPipeline")
+
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("START: Concatenating continuum from data set.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "concat_phangs_continuum")
+        casalog.post("START: Concatenating continuum from data set.", "INFO", "concat_phangs_continuum")
+        casalog.post("--------------------------------------------------------", "INFO", "concat_phangs_continuum")
 
     if just_array != '12m':
         concat_cont_for_gal(
@@ -539,9 +548,9 @@ def concat_phangs_continuum(
             tag = '12m+7m')
 
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "concat_phangs_continuum")
         casalog.post("END: Concatenate continuum from data set.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "concat_phangs_continuum")
 
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # Routines to extract lines from a measurement set
@@ -558,6 +567,8 @@ def list_lines_in_ms(
     be a general purpose utility.
     """
 
+    casalog.origin("phangsPipeline")
+
     # pull the parameters from the galaxy in the mosaic file
     if gal != None:
         mosaic_parms = read_mosaic_key()
@@ -569,7 +580,8 @@ def list_lines_in_ms(
 
     if os.path.isdir(in_file) == False:
         if quiet == False:
-            casalog.post("Input file not found.", "SEVERE", "")
+            casalog.post("Input file not found.", "SEVERE", "list_lines_in_ms")
+            casalog.post(in_file, "SEVERE", "list_lines_in_ms")
         return
 
     lines_in_ms = []
@@ -600,6 +612,8 @@ def chanwidth_for_line(
     overlap a line. This can be a general purpose utility.
     """
 
+    casalog.origin("phangsPipeline")
+
     # pull the parameters from the galaxy in the mosaic file
     if gal != None:
         mosaic_parms = read_mosaic_key()
@@ -611,14 +625,14 @@ def chanwidth_for_line(
 
     if os.path.isdir(in_file) == False:
         if quiet == False:
-            casalog.post("Input file not found.", "SEVERE", "")
+            casalog.post("Input file not found.", "SEVERE", "chanwidth_for_line")
         return
 
     # Look up the line
 
     if line_list.line_list.has_key(line) == False:
         if quiet == False:
-            casalog.post("Line not found. Give lower case abbreviate found in line_list.py", "SEVERE", "")
+            casalog.post("Line not found. Give lower case abbreviate found in line_list.py", "SEVERE", "chanwidth_for_line")
         return
     restfreq_ghz = line_list.line_list[line]
 
@@ -646,7 +660,7 @@ def chanwidth_for_line(
 
     if len(spw_list) == 0:
         if quiet == False:
-            casalog.post("No spectral windows contain this line at this redshift.", "WARN", "")
+            casalog.post("No spectral windows contain this line at this redshift.", "WARN", "chanwidth_for_line")
         return
 
     # Figure out how much averaging is needed to reach the target resolution
@@ -676,11 +690,12 @@ def extract_line(in_file=None,
     regridding and rebinning.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     if quiet == False:
-        casalog.post("--------------------------------------", "INFO", "")
-        casalog.post("EXTRACT_LINE begins:", "INFO", "")
+        casalog.post("--------------------------------------", "INFO", "extract_line")
+        casalog.post("EXTRACT_LINE begins:", "INFO", "extract_line")
 
     # pull the parameters from the galaxy in the mosaic file. This is
     # PHANGS-specific. Just ignore the gal keyword to use the routine
@@ -696,14 +711,14 @@ def extract_line(in_file=None,
 
     if os.path.isdir(in_file) == False:
         if quiet == False:
-            casalog.post("... input file not found.", "SEVERE", "")
+            casalog.post("... input file not found.", "SEVERE", "extract_line")
         return
 
     # Look up the line
 
     if line_list.line_list.has_key(line) == False:
         if quiet == False:
-            casalog.post("... line not found. Give lower case abbreviate found in line_list.py", "SEVERE", "")
+            casalog.post("... line not found. Give lower case abbreviate found in line_list.py", "SEVERE", "extract_line")
         return
     restfreq_ghz = line_list.line_list[line]
 
@@ -731,11 +746,11 @@ def extract_line(in_file=None,
 
     if len(spw_list) == 0:
         if quiet == False:
-            casalog.post("... no spectral windows contain this line at this redshift.", "SEVERE", "")
+            casalog.post("... no spectral windows contain this line at this redshift.", "SEVERE", "extract_line")
         return
 
     if quiet == False:
-        casalog.post("... spectral windows to consider: "+spw_list_string, "INFO", "")
+        casalog.post("... spectral windows to consider: "+spw_list_string, "INFO", "extract_line")
 
     # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
     # STEP 1. Shift the zero point AND change the channel width (slightly).
@@ -755,12 +770,12 @@ def extract_line(in_file=None,
     chanwidth_string =  "{:12.8f}".format(chan_fine)+' km/s'
 
     if quiet == False:
-        casalog.post("... shifting the fine grid (before any regridding)", "INFO", "")
-        casalog.post("... rest frequency: "+restfreq_string, "INFO", "")
-        casalog.post("... new starting velocity: "+start_vel_string, "INFO", "")
-        casalog.post("... original velocity width: "+str(current_chan_width_kms)+" km/s", "INFO", "")
-        casalog.post("... target velocity width: "+str(chan_fine)+" km/s", "INFO", "")
-        casalog.post("... number of channels at this stage: "+str(nchan_for_recenter), "INFO", "")
+        casalog.post("... shifting the fine grid (before any regridding)", "INFO", "extract_line")
+        casalog.post("... rest frequency: "+restfreq_string, "INFO", "extract_line")
+        casalog.post("... new starting velocity: "+start_vel_string, "INFO", "extract_line")
+        casalog.post("... original velocity width: "+str(current_chan_width_kms)+" km/s", "INFO", "extract_line")
+        casalog.post("... target velocity width: "+str(chan_fine)+" km/s", "INFO", "extract_line")
+        casalog.post("... number of channels at this stage: "+str(nchan_for_recenter), "INFO", "extract_line")
 
     os.system('rm -rf '+out_file+'.temp'+" >> "+log_file+" 2>&1")
     os.system('rm -rf '+out_file+'.temp.flagversions'+" >> "+log_file+" 2>&1")
@@ -805,8 +820,8 @@ def extract_line(in_file=None,
     # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 
     if quiet == False:
-        casalog.post("... channel averaging", "INFO", "")
-        casalog.post("... rebinning factor: "+str(rebin_factor), "INFO", "")
+        casalog.post("... channel averaging", "INFO", "extract_line")
+        casalog.post("... rebinning factor: "+str(rebin_factor), "INFO", "extract_line")
 
     if rebin_factor > 1:
         os.system('rm -rf '+out_file+'.temp2'+" >> "+log_file+" 2>&1")
@@ -826,7 +841,7 @@ def extract_line(in_file=None,
     # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 
     if quiet == False:
-        casalog.post("... combining spectral windows", "INFO", "")
+        casalog.post("... combining spectral windows", "INFO", "extract_line")
 
     os.system('rm -rf '+out_file+" >> "+log_file+" 2>&1")
     os.system('rm -rf '+out_file+'.flagversions'+" >> "+log_file+" 2>&1") 
@@ -840,7 +855,7 @@ def extract_line(in_file=None,
                 )    
 
     if quiet == False:
-        casalog.post("... deleting old files", "INFO", "")
+        casalog.post("... deleting old files", "INFO", "extract_line")
         
     # Clean up
     os.system('rm -rf '+out_file+'.temp'+" >> "+log_file+" 2>&1")
@@ -863,7 +878,7 @@ def extract_line(in_file=None,
             exclude_str = '*:'+str(edge_for_statwt-1)+'~'+\
                 str(nchan_final-(edge_for_statwt-2))
 
-        casalog.post("... running statwt with exclusion: "+exclude_str, "INFO", "")
+        casalog.post("... running statwt with exclusion: "+exclude_str, "INFO", "extract_line")
 
         # This needs to revert to oldstatwt, it seems not to work in the new form
 
@@ -877,7 +892,7 @@ def extract_line(in_file=None,
                       fitspw=exclude_str,
                       )
 
-    casalog.post("--------------------------------------", "INFO", "")
+    casalog.post("--------------------------------------", "INFO", "extract_line")
 
     return
 
@@ -903,20 +918,22 @@ def extract_line_for_galaxy(
     projects.
     """
 
+    casalog.origin("phangsPipeline")
+
     if just_array == None:
         just_array = '12m_ext+12m_com+7m'
     just_array_list = just_array.split('+')
     
     if gal == None:
         if quiet == False:
-            casalog.post("Please specify a galaxy.", "SEVERE", "")
+            casalog.post("Please specify a galaxy.", "SEVERE", "extract_line_for_galaxy")
         return
 
     ms_key = read_ms_key()
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
-            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "extract_line_for_galaxy")
         return
     gal_specific_key = ms_key[gal]
 
@@ -968,10 +985,10 @@ def extract_line_for_galaxy(
 
             lines_in_ms = list_lines_in_ms(in_file, gal=gal)
             if lines_in_ms == None:
-                casalog.post("No lines found in measurement set.", "WARN", "")
+                casalog.post("No lines found in measurement set.", "WARN", "extract_line_for_galaxy")
                 continue
             if lines_in_ms.count(line) == 0:
-                casalog.post("Line not found in measurement set.", "WARN", "")
+                casalog.post("Line not found in measurement set.", "WARN", "extract_line_for_galaxy")
                 continue
 
             extract_line(in_file=in_file,
@@ -1005,6 +1022,8 @@ def calculate_phangs_chanwidth(
     width of the specified line.
     """
 
+    casalog.origin("phangsPipeline")
+
     one_plus_eps = 1.0+1e-3
 
     if just_array == None:
@@ -1013,14 +1032,14 @@ def calculate_phangs_chanwidth(
 
     if gal == None:
         if quiet == False:
-            casalog.post("Please specify a galaxy.", "SEVERE", "")
+            casalog.post("Please specify a galaxy.", "SEVERE", "calculate_phangs_chanwidth")
         return
 
     ms_key = read_ms_key()
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
-            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "calculate_phangs_chanwidth")
         return
     gal_specific_key = ms_key[gal]
 
@@ -1110,16 +1129,16 @@ def calculate_phangs_chanwidth(
         rebin_fac = 1
 
     if quiet == False:
-        casalog.post("", "INFO", "")
-        casalog.post("For galaxy: "+gal+" and line "+line, "INFO", "")
-        casalog.post("... channel widths:", "INFO", "")
+        casalog.post("", "INFO", "calculate_phangs_chanwidth")
+        casalog.post("For galaxy: "+gal+" and line "+line, "INFO", "calculate_phangs_chanwidth")
+        casalog.post("... channel widths:", "INFO", "calculate_phangs_chanwidth")
         for ii in range(len(vis_list)):
-            casalog.post(str(chanwidth_list[ii])+' ... '+str(vis_list[ii]), "INFO", "")
-        casalog.post("... max is "+str(max_cw), "INFO", "")
-        casalog.post("... min is "+str(min_cw), "INFO", "")
-        casalog.post("... interpolate_to "+str(interpolate_cw), "INFO", "")
-        casalog.post("... then rebin by "+str(rebin_fac), "INFO", "")
-        casalog.post("... to final "+str(rebin_fac*interpolate_cw), "INFO", "")
+            casalog.post(str(chanwidth_list[ii])+' ... '+str(vis_list[ii]), "INFO", "calculate_phangs_chanwidth")
+        casalog.post("... max is "+str(max_cw), "INFO", "calculate_phangs_chanwidth")
+        casalog.post("... min is "+str(min_cw), "INFO", "calculate_phangs_chanwidth")
+        casalog.post("... interpolate_to "+str(interpolate_cw), "INFO", "calculate_phangs_chanwidth")
+        casalog.post("... then rebin by "+str(rebin_fac), "INFO", "calculate_phangs_chanwidth")
+        casalog.post("... to final "+str(rebin_fac*interpolate_cw), "INFO", "calculate_phangs_chanwidth")
 
     # Report
 
@@ -1137,6 +1156,8 @@ def extract_phangs_lines(
     Extract all PHANGS lines and the mm continuum for a galaxy.
     """
 
+    casalog.origin("phangsPipeline")
+
     # Could add sio54, which is generally covered in PHANGS but almost
     # always likely to be a nondetection.
 
@@ -1145,9 +1166,9 @@ def extract_phangs_lines(
     just_array_list = just_array.split('+')
 
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("START: Extracting spectral lines from data set.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "extract_phangs_lines")
+        casalog.post("START: Extracting spectral lines from data set.", "INFO", "extract_phangs_lines")
+        casalog.post("--------------------------------------------------------", "INFO", "extract_phangs_lines")
 
     # Hardcoded parameters for the PHANGS lines
 
@@ -1181,7 +1202,7 @@ def extract_phangs_lines(
             )
         
         if interp_to == None or rebin_fac == None:
-            casalog.post("I cannot extract "+line+" for "+gal, "SEVERE", "")
+            casalog.post("I cannot extract "+line+" for "+gal, "SEVERE", "extract_phangs_lines")
             return
 
         extract_line_for_galaxy(
@@ -1198,9 +1219,9 @@ def extract_phangs_lines(
             )
  
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("END: Extracting spectral lines from data set.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "extract_phangs_lines")
+        casalog.post("END: Extracting spectral lines from data set.", "INFO", "extract_phangs_lines")
+        casalog.post("--------------------------------------------------------", "INFO", "extract_phangs_lines")
 
 def concat_phangs_lines(   
     gal=None,
@@ -1214,15 +1235,17 @@ def concat_phangs_lines(
     sets.
     """
 
+    casalog.origin("phangsPipeline")
+
     if just_array == '':
         just_array = '12m_ext+12m_com+7m'
 
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("START: Concatenating spectral line measurements.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("", "INFO", "")
-        casalog.post("Galaxy: "+gal, "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "concat_phangs_lines")
+        casalog.post("START: Concatenating spectral line measurements.", "INFO", "concat_phangs_lines")
+        casalog.post("--------------------------------------------------------", "INFO", "concat_phangs_lines")
+        casalog.post("", "INFO", "concat_phangs_lines")
+        casalog.post("Galaxy: "+gal, "INFO", "concat_phangs_lines")
 
     for line in lines:
         if (just_array == '7m' or
@@ -1284,9 +1307,9 @@ def concat_phangs_lines(
             )
 
     if quiet == False:
-        casalog.post("--------------------------------------------------------", "INFO", "")
-        casalog.post("END: Concatenating spectral line measurements.", "INFO", "")
-        casalog.post("--------------------------------------------------------", "INFO", "")
+        casalog.post("--------------------------------------------------------", "INFO", "concat_phangs_lines")
+        casalog.post("END: Concatenating spectral line measurements.", "INFO", "concat_phangs_lines")
+        casalog.post("--------------------------------------------------------", "INFO", "concat_phangs_lines")
     
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # Routines to extract continuum from a measurement set
@@ -1306,6 +1329,7 @@ def contsub(
     of bright lines.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     sol_kms = 2.99e5
@@ -1314,7 +1338,7 @@ def contsub(
 
     if os.path.isdir(in_file) == False:
         if quiet == False:
-            casalog.post("Input file not found.", "SEVERE", "")
+            casalog.post("Input file not found.", "SEVERE", "contsub")
         return
 
     # pull the parameters from the galaxy in the mosaic file
@@ -1354,7 +1378,7 @@ def contsub(
         if spw_list == []:
             continue
 
-        casalog.post("Found overlap for "+line, "INFO", "")
+        casalog.post("Found overlap for "+line, "INFO", "contsub")
         for this_spw in spw_list:
             freq_ra = vm.spwInfo[this_spw]['chanFreqs']
             chan_ra = np.arange(len(freq_ra))
@@ -1369,7 +1393,7 @@ def contsub(
             else:
                 spw_flagging_string += ','+this_spw_string
 
-    casalog.post("... proposed channels to avoid "+spw_flagging_string, "INFO", "")
+    casalog.post("... proposed channels to avoid "+spw_flagging_string, "INFO", "contsub")
 
     os.system('rm -rf '+in_file+'.contsub'+" >> "+log_file+" 2>&1")
     uvcontsub(vis=in_file,
@@ -1394,6 +1418,7 @@ def extract_continuum(
     0" measurement.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     sol_kms = 2.99e5
@@ -1402,7 +1427,7 @@ def extract_continuum(
 
     if os.path.isdir(in_file) == False:
         if quiet == False:
-            casalog.post("Input file not found: "+in_file, "SEVERE", "")
+            casalog.post("Input file not found: "+in_file, "SEVERE", "extract_continuum")
         return
 
     # pull the parameters from the galaxy in the mosaic file
@@ -1424,9 +1449,9 @@ def extract_continuum(
     os.system('rm -rf '+out_file+'.flagversions'+" >> "+log_file+" 2>&1")
 
     command = 'cp -r -H '+in_file+' '+out_file+" >> "+log_file+" 2>&1"
-    casalog.post(command, "INFO", "")
+    casalog.post(command, "INFO", "extract_continuum")
     var = os.system(command)
-    casalog.post(str(var), "INFO", "")
+    casalog.post(str(var), "INFO", "extract_continuum")
     
     # Figure out the line channels and flag them
 
@@ -1454,7 +1479,7 @@ def extract_continuum(
         if spw_list == []:
             continue
 
-        casalog.post("Found overlap for "+line, "INFO", "")
+        casalog.post("Found overlap for "+line, "INFO", "extract_continuum")
         for this_spw in spw_list:
             freq_ra = vm.spwInfo[this_spw]['chanFreqs']
             chan_ra = np.arange(len(freq_ra))
@@ -1469,7 +1494,7 @@ def extract_continuum(
             else:
                 spw_flagging_string += ','+this_spw_string
         
-    casalog.post("... proposed flagging "+spw_flagging_string, "INFO", "")
+    casalog.post("... proposed flagging "+spw_flagging_string, "INFO", "extract_continuum")
 
     if spw_flagging_string != '':
         flagdata(vis=out_file,
@@ -1480,7 +1505,7 @@ def extract_continuum(
     # 5.6.1 to see if it can be sped up. Right now things are
     # devastatingly slow.
     if do_statwt:
-        casalog.post("... deriving empirical weights using STATWT.", "INFO", "")
+        casalog.post("... deriving empirical weights using STATWT.", "INFO", "extract_continuum")
         statwt(vis=out_file,
                timebin='0.001s',
                slidetimebin=False,
@@ -1490,20 +1515,20 @@ def extract_continuum(
                )
 
     if do_collapse:
-        casalog.post("... Collapsing the continuum to a single channel.", "INFO", "")
+        casalog.post("... Collapsing the continuum to a single channel.", "INFO", "extract_continuum")
 
         os.system('rm -rf '+out_file+'.temp_copy'+" >> "+log_file+" 2>&1")
         os.system('rm -rf '+out_file+'.temp_copy.flagversions'+" >> "+log_file+" 2>&1")
 
         command = 'mv '+out_file+' '+out_file+'.temp_copy'+" >> "+log_file+" 2>&1"
-        casalog.post(command, "INFO", "")
+        casalog.post(command, "INFO", "extract_continuum")
         var = os.system(command)
-        casalog.post(str(var), "INFO", "")
+        casalog.post(str(var), "INFO", "extract_continuum")
 
         command = 'mv '+out_file+'.flagversions '+out_file+'.temp_copy.flagversions'+" >> "+log_file+" 2>&1"
-        casalog.post(command, "INFO", "")
+        casalog.post(command, "INFO", "extract_continuum")
         var = os.system(command)
-        casalog.post(str(var), "INFO", "")
+        casalog.post(str(var), "INFO", "extract_continuum")
 
         split(vis=out_file+'.temp_copy',
               outputvis=out_file,
@@ -1528,6 +1553,7 @@ def subtract_continuum(
     Modified from "extract_continuum" function.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     sol_kms = 2.99e5
@@ -1536,7 +1562,7 @@ def subtract_continuum(
 
     if os.path.isdir(in_file) == False:
         if quiet == False:
-            casalog.post("Input file not found: "+in_file, "SEVERE", "")
+            casalog.post("Input file not found: "+in_file, "SEVERE", "subtract_continuum")
         return
 
     # pull the parameters from the galaxy in the mosaic file
@@ -1578,7 +1604,7 @@ def subtract_continuum(
         if spw_list == []:
             continue
 
-        casalog.post("Found overlap for "+line, "INFO", "")
+        casalog.post("Found overlap for "+line, "INFO", "subtract_continuum")
         for this_spw in spw_list:
             freq_ra = vm.spwInfo[this_spw]['chanFreqs']
             chan_ra = np.arange(len(freq_ra))
@@ -1593,7 +1619,7 @@ def subtract_continuum(
             else:
                 spw_flagging_string += ','+this_spw_string
         
-    casalog.post("... proposed line exclusion "+spw_flagging_string, "INFO", "")
+    casalog.post("... proposed line exclusion "+spw_flagging_string, "INFO", "subtract_continuum")
 
     os.system('rm -rf '+in_file+'.contsub'+" >> "+log_file+" 2>&1")
     uvcontsub(vis=in_file,
@@ -1623,17 +1649,19 @@ def extract_continuum_for_galaxy(
     Extract continuum for all data sets for a galaxy. This knows about
     the PHANGS measurement set keys and is specific to our projects.
     """
+
+    casalog.origin("phangsPipeline")
     
     if gal == None:
         if quiet == False:
-            casalog.post("Please specify a galaxy.", "SEVERE", "")
+            casalog.post("Please specify a galaxy.", "SEVERE", "extract_continuum_for_galaxy")
         return
 
     ms_key = read_ms_key()
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
-            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "extract_continuum_for_galaxy")
         return
     gal_specific_key = ms_key[gal]
 
@@ -1702,17 +1730,23 @@ def subtract_continuum_for_galaxy(
     Subtract continuum for all data sets for a galaxy. This knows about
     the PHANGS measurement set keys and is specific to our projects.
     """
+
+    casalog.origin("phangsPipeline")
+
+    if just_array == None:
+        just_array = '12m_ext+12m_com+7m'
+    just_array_list = just_array.split('+')
     
     if gal == None:
         if quiet == False:
-            casalog.post("Please specify a galaxy.", "SEVERE", "")
+            casalog.post("Please specify a galaxy.", "SEVERE", "subtract_continuum_for_galaxy")
         return
 
     ms_key = read_ms_key()
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
-            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "subtract_continuum_for_galaxy")
         return
     gal_specific_key = ms_key[gal]
 
@@ -1749,11 +1783,16 @@ def subtract_continuum_for_galaxy(
                     else:
                         if this_ms != just_ms:
                             continue
-            
+
             if just_array != None:
-                if this_ms.count(just_array) == 0:
+                just_array_in_this_ms = False
+                for array in just_array_list:
+                    if array in this_ms:
+                        just_array_in_this_ms = True
+                        break
+                if not just_array_in_this_ms:
                     continue
-            
+
             in_file = gal+'_'+this_proj+'_'+this_ms+ext+'.ms'+append_ext
 
             subtract_continuum(
@@ -1775,6 +1814,9 @@ def noise_spectrum(
     """
     Calculates the u-v based noise spectrum and returns it as an array.
     """
+
+    casalog.origin("phangsPipeline")
+
     if vis == None:
         return None
     
@@ -1796,7 +1838,7 @@ def noise_spectrum(
                          spw='0:'+str(ii),
                          )
         if result == None:
-            casalog.post("Skipping channel.", "INFO", "")
+            casalog.post("Skipping channel.", "INFO", "noise_spectrum")
             continue
         spec[ii] = result[result.keys()[0]][stat_name]
         
@@ -1811,6 +1853,8 @@ def pick_phangs_cell_and_imsize(
     Wraps estimate_cell_and_imsize and also allows our custom
     overrides.
     """
+
+    casalog.origin("phangsPipeline")
 
     cell_size_string, x_size_string, y_size_string = \
         estimate_cell_and_imsize(in_file, oversamp,
@@ -1840,8 +1884,10 @@ def estimate_cell_and_imsize(
     for the FFT and will try to pick a round number for the cell size.
     """
 
+    casalog.origin("phangsPipeline")
+
     if os.path.isdir(in_file) == False:
-        casalog.post("File not found.", "SEVERE", "")
+        casalog.post("File not found.", "SEVERE", "estimate_cell_and_imsize")
         return
     
     valid_sizes = []
@@ -1910,8 +1956,11 @@ def stat_clean_cube(cube_file=None):
     """
     Calculate statistics for an image cube.
     """
+
+    casalog.origin("phangsPipeline")
+
     if cube_file == None:
-        casalog.post("No cube file specified. Returning", "SEVERE", "")
+        casalog.post("No cube file specified. Returning", "SEVERE", "stat_clean_cube")
         return
     imstat_dict = imstat(cube_file)
     
@@ -1925,6 +1974,7 @@ def save_copy_of_cube(
     the previous cube of that name.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     wipe_cube(output_root)
@@ -1944,6 +1994,7 @@ def wipe_cube(
     Wipe files associated with a cube.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     if cube_root == None:
@@ -1964,6 +2015,7 @@ def replace_cube_with_copy(
     Replace a cube with a copy.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     wipe_cube(to_root)
@@ -1987,6 +2039,7 @@ def import_and_align_mask(
     things work most of the time.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
 
     # Import from FITS (could make optional)
@@ -2034,7 +2087,7 @@ def import_and_align_mask(
         myia.putchunk(data)
         myia.close()
     else:
-        casalog.post("ALERT! Did not find a case.", "SEVERE", "")
+        casalog.post("ALERT! Did not find a case.", "SEVERE", "import_and_align_mask")
 
     os.system('rm -rf '+out_file+'.temp_copy'+" >> "+log_file+" 2>&1")
     os.system('rm -rf '+out_file+'.temp_aligned'+" >> "+log_file+" 2>&1")
@@ -2052,8 +2105,11 @@ def apply_additional_mask(
     beam based masks by setting the PB file to new_mask_file and the
     pb_limit as new_thresh.
     """
+
+    casalog.origin("phangsPipeline")
+
     if root_mask == None:
-        casalog.post("Specify a cube root file name.", "SEVERE", "")
+        casalog.post("Specify a cube root file name.", "SEVERE", "apply_additional_mask")
         return
 
     myia = au.createCasaTool(iatool)    
@@ -2085,11 +2141,12 @@ def signal_mask(
     fly during imaging. Leverages CASA statistics and scipy.
     """
 
+    casalog.origin("phangsPipeline")
     log_file = casalog.logfile()
     
     if os.path.isdir(cube_root+'.image') == False:
-        casalog.post('Need CUBE_ROOT.image to be an image file.', "SEVERE", "")
-        casalog.post('Returning. Generalize the code if you want different syntax.', "SEVERE", "")
+        casalog.post('Need CUBE_ROOT.image to be an image file.', "SEVERE", "signal_mask")
+        casalog.post('Returning. Generalize the code if you want different syntax.', "SEVERE", "signal_mask")
         return
 
     myia = au.createCasaTool(iatool)
@@ -2099,8 +2156,8 @@ def signal_mask(
             old_mask = myia.getchunk()
             myia.close()
         else:
-            casalog.post("Operation AND/OR requested but no previous mask found.", "WARN", "")
-            casalog.post("... will set operation=NEW.", "WARN", "")
+            casalog.post("Operation AND/OR requested but no previous mask found.", "WARN", "signal_mask")
+            casalog.post("... will set operation=NEW.", "WARN", "signal_mask")
             operation = 'NEW'    
 
     if os.path.isdir(cube_root+'.residual') == True:
@@ -2160,6 +2217,8 @@ def export_to_fits(
     """
     Export the various products associated with a CASA cube to FITS.
     """
+
+    casalog.origin("phangsPipeline")
 
     exportfits(imagename=cube_root+'.image',
                fitsimage=cube_root+'.fits',
@@ -2230,17 +2289,19 @@ class cleanCall:
         """
         Execute the clean call.
         """
+
+        casalog.origin("cleanCall")
     
         if self.vis == None:
-            casalog.post("No visibility. Returning.", "SEVERE", "")
+            casalog.post("No visibility. Returning.", "SEVERE", "execute")
             return    
 
         if os.path.isdir(self.vis) == False:
-            casalog.post("Visibility file not found. Returning.", "SEVERE", "")
+            casalog.post("Visibility file not found. Returning.", "SEVERE", "execute")
             return
         
         if self.cell_size == None or self.image_size == None:
-            casalog.post("Estimating cell and image size.", "INFO", "")
+            casalog.post("Estimating cell and image size.", "INFO", "execute")
             estimate_cell_and_imsize(self.vis, oversamp=5)
 
         if self.restfreq_ghz < 0:
@@ -2258,7 +2319,7 @@ class cleanCall:
             uv_taper_string = [str(self.uvtaper)+'arcsec',str(self.uvtaper)+'arcsec','0deg']
 
         if self.reset:
-            casalog.post("Wiping previous versions of the cube.", "INFO", "")
+            casalog.post("Wiping previous versions of the cube.", "INFO", "execute")
             wipe_cube(self.image_root)
 
         tclean(vis=self.vis,
@@ -2313,8 +2374,10 @@ def make_dirty_map(
     Create a dirty map from a visibility set.
     """
 
+    casalog.origin("phangsPipeline")
+
     if type(clean_call) != type(cleanCall()):
-        casalog.post("Supply a valid clean call.", "SEVERE", "")
+        casalog.post("Supply a valid clean call.", "SEVERE", "make_dirty_map")
 
     clean_call.niter = 0
     clean_call.reset = True
@@ -2346,11 +2409,13 @@ def multiscale_loop(
     """
     Carry out an iterative multiscale clean loop.
     """
+
+    casalog.origin("phangsPipeline")
     
     # Check that we have a vile clean call
 
     if type(clean_call) != type(cleanCall()):
-        casalog.post("Supply a valid clean call.", "SEVERE", "")
+        casalog.post("Supply a valid clean call.", "SEVERE", "multiscale_loop")
     
     # Figure out the scales to use in pixel units
 
@@ -2364,9 +2429,9 @@ def multiscale_loop(
     clean_call.calcres = False
     clean_call.calcpsf = False
 
-    casalog.post("I will use the following scales: ", "INFO", "")
-    casalog.post("... as pixels: "+str(clean_call.scales_as_pix), "INFO", "")
-    casalog.post("... as arcseconds: "+str(clean_call.scales_as_angle), "INFO", "")
+    casalog.post("I will use the following scales: ", "INFO", "multiscale_loop")
+    casalog.post("... as pixels: "+str(clean_call.scales_as_pix), "INFO", "multiscale_loop")
+    casalog.post("... as arcseconds: "+str(clean_call.scales_as_angle), "INFO", "multiscale_loop")
 
     # Call the loop
 
@@ -2402,11 +2467,13 @@ def singlescale_loop(
     """
     Carry out an iterative multiscale clean loop.
     """
+
+    casalog.origin("phangsPipeline")
     
     # Check that we have a vile clean call
 
     if type(clean_call) != type(cleanCall()):
-        casalog.post("Supply a valid clean call.", "SEVERE", "")
+        casalog.post("Supply a valid clean call.", "SEVERE", "singlescale_loop")
         
     clean_call.deconvolver = 'hogbom'
     clean_call.calcres = False
@@ -2447,6 +2514,8 @@ def clean_loop(
     """
     Carry out an iterative clean until a convergence criteria is met.
     """
+
+    casalog.origin("phangsPipeline")
 
    # Note the number of channels, which is used in setting the number
    # of iterations that we give to an individual clean call.
@@ -2507,9 +2576,9 @@ def clean_loop(
         # single scale clean.)
 
         if remask:
-            casalog.post("", "INFO", "")
-            casalog.post("Remasking.", "INFO", "")
-            casalog.post("", "INFO", "")
+            casalog.post("", "INFO", "clean_loop")
+            casalog.post("Remasking.", "INFO", "clean_loop")
+            casalog.post("", "INFO", "clean_loop")
             signal_mask(
                 cube_root=clean_call.image_root,
                 out_file=clean_call.image_root+'.mask',
@@ -2562,16 +2631,16 @@ def clean_loop(
             
         # Print output
                 
-        casalog.post("", "INFO", "")
-        casalog.post("******************************", "INFO", "")
-        casalog.post("CLEAN LOOP "+str(loop), "INFO", "")
-        casalog.post("... threshold "+clean_call.threshold, "INFO", "")
-        casalog.post("... old flux "+str(prev_flux), "INFO", "")
-        casalog.post("... new flux "+str(model_flux), "INFO", "")
-        casalog.post("... fractional change "+str(delta_flux)+ " compare to stopping criterion of "+str(delta_flux_threshold), "INFO", "")
-        casalog.post("... proceed? "+str(proceed), "INFO", "")
-        casalog.post("******************************", "INFO", "")
-        casalog.post("", "INFO", "")
+        casalog.post("", "INFO", "clean_loop")
+        casalog.post("******************************", "INFO", "clean_loop")
+        casalog.post("CLEAN LOOP "+str(loop), "INFO", "clean_loop")
+        casalog.post("... threshold "+clean_call.threshold, "INFO", "clean_loop")
+        casalog.post("... old flux "+str(prev_flux), "INFO", "clean_loop")
+        casalog.post("... new flux "+str(model_flux), "INFO", "clean_loop")
+        casalog.post("... fractional change "+str(delta_flux)+ " compare to stopping criterion of "+str(delta_flux_threshold), "INFO", "clean_loop")
+        casalog.post("... proceed? "+str(proceed), "INFO", "clean_loop")
+        casalog.post("******************************", "INFO", "clean_loop")
+        casalog.post("", "INFO", "clean_loop")
 
         # Record to log
 
@@ -2600,6 +2669,8 @@ def buildPhangsCleanCall(
     Build a clean call.
     """
 
+    casalog.origin("phangsPipeline")
+
     # Change to the relevant directory
 
     this_dir = dir_for_gal(gal)
@@ -2613,7 +2684,7 @@ def buildPhangsCleanCall(
 
     clean_call.vis = gal+'_'+array+'_'+product+'.ms'
     if os.path.isdir(clean_call.vis) == False:
-        casalog.post("Visibility data not found. Returning empty.", "SEVERE", "")
+        casalog.post("Visibility data not found. Returning empty.", "SEVERE", "buildPhangsCleanCall")
         return None
 
     if tag == '':
@@ -2754,7 +2825,7 @@ def buildPhangsCleanCall(
     if os.path.isfile(clean_file_name):
         clean_call.clean_mask_file = clean_file_name
     else:
-        casalog.post("Clean mask not found "+clean_file_name, "SEVERE", "")
+        casalog.post("Clean mask not found "+clean_file_name, "SEVERE", "buildPhangsCleanCall")
 
     # Return
 
@@ -2780,6 +2851,8 @@ def phangsImagingRecipe(
     single scale clean -> export.
     """
 
+    casalog.origin("phangsPipeline")
+
     if clean_call == None:
         clean_call = buildPhangsCleanCall(
             gal=gal,
@@ -2788,25 +2861,25 @@ def phangsImagingRecipe(
             )
     
     if make_dirty_image:
-        casalog.post("", "INFO", "")
-        casalog.post("MAKING THE DIRTY IMAGE.", "INFO", "")
-        casalog.post("", "INFO", "")
+        casalog.post("", "INFO", "phangsImagingRecipe")
+        casalog.post("MAKING THE DIRTY IMAGE.", "INFO", "phangsImagingRecipe")
+        casalog.post("", "INFO", "phangsImagingRecipe")
 
         make_dirty_map(clean_call)
 
     if revert_to_dirty:
-        casalog.post("", "INFO", "")
-        casalog.post("RESETING THE IMAGING TO THE DIRTY IMAGE.", "INFO", "")
-        casalog.post("", "INFO", "")
+        casalog.post("", "INFO", "phangsImagingRecipe")
+        casalog.post("RESETING THE IMAGING TO THE DIRTY IMAGE.", "INFO", "phangsImagingRecipe")
+        casalog.post("", "INFO", "phangsImagingRecipe")
 
         replace_cube_with_copy(
             to_root=clean_call.image_root,
             from_root=clean_call.image_root+'_dirty')
 
     if read_in_clean_mask:
-        casalog.post("", "INFO", "")
-        casalog.post("READING IN THE CLEAN MASK.", "INFO", "")
-        casalog.post("", "INFO", "")
+        casalog.post("", "INFO", "phangsImagingRecipe")
+        casalog.post("READING IN THE CLEAN MASK.", "INFO", "phangsImagingRecipe")
+        casalog.post("", "INFO", "phangsImagingRecipe")
         
         if clean_call.clean_mask_file != None:
             import_and_align_mask(
@@ -2816,13 +2889,13 @@ def phangsImagingRecipe(
                 )
             clean_call.usemask = 'user'
         else:
-            casalog.post("No clean mask defined.", "INFO", "")
+            casalog.post("No clean mask defined.", "INFO", "phangsImagingRecipe")
             clean_call.usemask = 'pb'
 
     if run_multiscale_clean:
-        casalog.post("", "INFO", "")
-        casalog.post("RUNNING THE MULTISCALE CLEAN.", "INFO", "")
-        casalog.post("", "INFO", "")
+        casalog.post("", "INFO", "phangsImagingRecipe")
+        casalog.post("RUNNING THE MULTISCALE CLEAN.", "INFO", "phangsImagingRecipe")
+        casalog.post("", "INFO", "phangsImagingRecipe")
 
         #clean_call.interactive = True
         multiscale_loop(
@@ -2836,18 +2909,18 @@ def phangsImagingRecipe(
             )
 
     if revert_to_multiscale:
-        casalog.post("", "INFO", "")
-        casalog.post("RESETING THE IMAGING TO THE OUTPUT OF MULTISCALE CLEAN.", "INFO", "")
-        casalog.post("", "INFO", "")
+        casalog.post("", "INFO", "phangsImagingRecipe")
+        casalog.post("RESETING THE IMAGING TO THE OUTPUT OF MULTISCALE CLEAN.", "INFO", "phangsImagingRecipe")
+        casalog.post("", "INFO", "phangsImagingRecipe")
 
         replace_cube_with_copy(
             to_root=clean_call.image_root,
             from_root=clean_call.image_root+'_multiscale')
 
     if make_singlescale_mask:
-        casalog.post("", "INFO", "")
-        casalog.post("MAKING THE MASK FOR SINGLE SCALE CLEAN.", "INFO", "")
-        casalog.post("", "INFO", "")
+        casalog.post("", "INFO", "phangsImagingRecipe")
+        casalog.post("MAKING THE MASK FOR SINGLE SCALE CLEAN.", "INFO", "phangsImagingRecipe")
+        casalog.post("", "INFO", "phangsImagingRecipe")
 
         signal_mask(
             cube_root=clean_call.image_root,
@@ -2859,9 +2932,9 @@ def phangsImagingRecipe(
         clean_call.usemask='user'
         
     if run_singlescale_clean:
-        casalog.post("", "INFO", "")
-        casalog.post("RUNNING THE SINGLE SCALE CLEAN.", "INFO", "")
-        casalog.post("", "INFO", "")
+        casalog.post("", "INFO", "phangsImagingRecipe")
+        casalog.post("RUNNING THE SINGLE SCALE CLEAN.", "INFO", "phangsImagingRecipe")
+        casalog.post("", "INFO", "phangsImagingRecipe")
 
         singlescale_loop(
             clean_call = clean_call,
@@ -2876,9 +2949,9 @@ def phangsImagingRecipe(
             )
 
     if do_export_to_fits:
-        casalog.post("", "INFO", "")
-        casalog.post("EXPORTING PRODUCTS TO FITS.", "INFO", "")
-        casalog.post("", "INFO", "")
+        casalog.post("", "INFO", "phangsImagingRecipe")
+        casalog.post("EXPORTING PRODUCTS TO FITS.", "INFO", "phangsImagingRecipe")
+        casalog.post("", "INFO", "phangsImagingRecipe")
         export_to_fits(clean_call.image_root)
         export_to_fits(clean_call.image_root+'_dirty')
         export_to_fits(clean_call.image_root+'_multiscale')

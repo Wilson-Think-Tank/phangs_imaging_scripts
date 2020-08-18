@@ -7,6 +7,7 @@ import analysisUtils as au
 import glob
 
 casalog.showconsole(onconsole=False)
+casalog.origin("process_cubes")
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
@@ -112,10 +113,10 @@ if rebuild_directories:
 
 for this_loop in ['stage', 'process', 'feather', 'cleanup']:
     
-    casalog.post("", "INFO", "")
-    casalog.post("Looping over all galaxies and products.", "INFO", "")
-    casalog.post("... this loop is to: "+this_loop, "INFO", "")
-    casalog.post("", "INFO", "")
+    casalog.post("", "INFO")
+    casalog.post("Looping over all galaxies and products.", "INFO")
+    casalog.post("... this loop is to: "+this_loop, "INFO")
+    casalog.post("", "INFO")
 
     before_first = True
     after_last = False
@@ -133,14 +134,14 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
             not_in_list = (only.count(gal_part) == 0) and \
                 (only.count(whole_gal) == 0)
             if not_in_list:
-                casalog.post("Skipping galaxy part "+gal_part, "INFO", "")
+                casalog.post("Skipping galaxy part "+gal_part, "INFO")
                 continue
 
         if len(skip) > 0:
             in_list = (skip.count(gal_part) > 0) or \
                 (skip.count(whole_gal) > 0)
             if in_list:
-                casalog.post("Skipping galaxy part "+gal_part, "INFO", "")
+                casalog.post("Skipping galaxy part "+gal_part, "INFO")
                 continue
 
         if first != "":
@@ -155,17 +156,17 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
             if gal_part == last:
                 after_last = True
 
-        casalog.post("Processing galaxy part: "+gal_part, "INFO", "")
-        casalog.post("... part of whole galaxy: "+whole_gal, "INFO", "")
+        casalog.post("Processing galaxy part: "+gal_part, "INFO")
+        casalog.post("... part of whole galaxy: "+whole_gal, "INFO")
 
         for product in full_product_list:
             
             if len(just_product) > 0:
                 if just_product.count(product) == 0:
-                    casalog.post("... skipping line/product: "+product, "INFO", "")
+                    casalog.post("... skipping line/product: "+product, "INFO")
                     continue
                         
-            casalog.post("... processing line/product: "+product, "INFO", "")
+            casalog.post("... processing line/product: "+product, "INFO")
 
             if this_loop == 'stage' and stage_singledish:
                 pcp.phangs_stage_singledish(
@@ -178,10 +179,10 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
 
                 if len(just_array) > 0:
                     if just_array.count(array) == 0:
-                        casalog.post("... ... skipping array "+array, "INFO", "")
+                        casalog.post("... ... skipping array "+array, "INFO")
                         continue
 
-                casalog.post("... ... processing array: "+array, "INFO", "")
+                casalog.post("... ... processing array: "+array, "INFO")
 
                 if this_loop == 'stage' and stage_cubes:
                     if (array == '7m+tp'

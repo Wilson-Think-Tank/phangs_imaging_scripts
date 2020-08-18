@@ -19,6 +19,7 @@ import analysisUtils as au
 import glob
 
 casalog.showconsole(onconsole=False)
+casalog.origin("image_data")
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
@@ -149,12 +150,12 @@ for gal in gals:
     
     if len(only) > 0:
         if only.count(gal) == 0:
-            casalog.post("Skipping "+gal, "INFO", "")
+            casalog.post("Skipping "+gal, "INFO")
             continue
 
     if len(skip) > 0:
         if skip.count(gal) > 0:
-            casalog.post("Skipping "+gal, "INFO", "")
+            casalog.post("Skipping "+gal, "INFO")
             continue
 
     if first != "":
@@ -173,17 +174,17 @@ for gal in gals:
 
         if len(just_array) > 0:
             if array not in just_array:
-                casalog.post("Skipping "+array, "INFO", "")
+                casalog.post("Skipping "+array, "INFO")
                 continue
 
         for product in product_list:
 
             if len(just_product) > 0:
                 if just_product.count(product) == 0:
-                    casalog.post("Skipping "+product, "INFO", "")
+                    casalog.post("Skipping "+product, "INFO")
                     continue
 
-            casalog.post(gal + " " + array + " " + product, "INFO", "")
+            casalog.post(gal + " " + array + " " + product, "INFO")
 
             this_dir = pp.dir_for_gal(gal)
             out_image_name = this_dir+gal+'_'+array+'_'+product+'.image'
@@ -194,11 +195,11 @@ for gal in gals:
                 out_image_name = this_dir+gal+'_'+array+'_'+product+'.image'
                 has_image = len(glob.glob(out_image_name)) > 0
                 if has_image:
-                    casalog.post("", "WARN", "")
-                    casalog.post("... You requested to only image new data.", "WARN", "")
-                    casalog.post("... I found an existing image named "+out_image_name+" .", "WARN", "")
-                    casalog.post("... I will skip this combination of galaxy, array, and product.", "WARN", "")
-                    casalog.post("", "WARN", "")
+                    casalog.post("", "WARN")
+                    casalog.post("... You requested to only image new data.", "WARN")
+                    casalog.post("... I found an existing image named "+out_image_name+" .", "WARN")
+                    casalog.post("... I will skip this combination of galaxy, array, and product.", "WARN")
+                    casalog.post("", "WARN")
                     continue
 
             clean_call = \

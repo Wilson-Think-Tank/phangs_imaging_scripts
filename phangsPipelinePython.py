@@ -6,6 +6,9 @@ import numpy as np
 import scipy.ndimage as ndimage
 import glob
 
+# CASA imports
+from taskinit import *
+
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # Interface to the text file keys that steer the process
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
@@ -55,9 +58,11 @@ def get_uvdata_key(gal=None,
     calibrated data in that directory.
     """
 
+    casalog.origin("phangsPipelinePython")
+
     if gal == None:
         if quiet == False:
-            casalog.post("Please specify a galaxy.", "SEVERE", "")
+            casalog.post("Please specify a galaxy.", "SEVERE", "get_uvdata_key")
         return None
 
     ms_key = read_ms_key()
@@ -66,7 +71,7 @@ def get_uvdata_key(gal=None,
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
-            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "")
+            casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "get_uvdata_key")
         return None
     gal_specific_key = ms_key[gal]
 
@@ -117,11 +122,11 @@ def get_uvdata_key(gal=None,
 
             components = this_calibrated_file.split('/calibrated/')
             if len(components) != 2:
-                casalog.post("", "WARN", "")
-                casalog.post("Something is wrong with file "+this_calibrated_file, "WARN", "")
-                casalog.post("We assume that there is one and only one /calibrated/ in the directory.", "WARN", "")
-                casalog.post("Fix this or whatever else is going wrong and rerun. Skipping for now.", "WARN", "")
-                casalog.post("", "WARN", "")
+                casalog.post("", "WARN", "get_uvdata_key")
+                casalog.post("Something is wrong with file "+this_calibrated_file, "WARN", "get_uvdata_key")
+                casalog.post("We assume that there is one and only one /calibrated/ in the directory.", "WARN", "get_uvdata_key")
+                casalog.post("Fix this or whatever else is going wrong and rerun. Skipping for now.", "WARN", "get_uvdata_key")
+                casalog.post("", "WARN", "get_uvdata_key")
                 continue
 
             this_dir = components[0]+'/'
@@ -175,9 +180,11 @@ def dir_for_gal(gal=None,
     Return the working directory given a galaxy name. See above.
     """
 
+    casalog.origin("phangsPipelinePython")
+
     if gal == None:
         if quiet == False:
-            casalog.post("Please specify a galaxy.", "SEVERE", "")
+            casalog.post("Please specify a galaxy.", "SEVERE", "dir_for_gal")
         return
 
     dir_key = read_dir_key()

@@ -10,6 +10,7 @@ import analysisUtils as au
 import glob
 
 casalog.showconsole(onconsole=False)
+casalog.origin("stage_imaging")
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
@@ -30,7 +31,7 @@ last = ""
 
 # Set this to specify the array combinations you want to stage. Any that
 # combine arrays/configurations will also stage the individual components
-# as well. For example, '12m_ext_12m_com+7m' will stage 12m_ext_12m_com+7m,
+# as well. For example, '12m_ext_12m_com+7m' will stage 12m_ext+12m_com+7m,
 # 7m, 12m_com, 12m_ext, 12m_com+7m, 12m_ext+12m_com.
 # can be:
 #  - '7m'
@@ -39,8 +40,8 @@ last = ""
 #  - '12m_com+7m'
 #  - '12m_ext+12m_com'
 #  - '12m_ext_12m_com+7m'
-#  - None (same as '12m_ext_12m_com+7m')
-just_array = '12m_com+7m'
+#  - None (same as '12m_ext+12m_com+7m')
+just_array = '12m_ext+12m_com'
 
 # List of lines to process. There's not a lot of error catching
 # here. It needs to be a list and it only knows about co21 and c18o21
@@ -77,7 +78,7 @@ lines = ['co21']
 # the measurement set, first flagging lines. The velocity windows used
 # for flagging lines is set in "mosaic_definitions.txt"
 
-do_copy = True
+do_copy = False
 do_custom_scripts = False
 do_subtract_cont = True
 do_extract_lines = True
@@ -122,11 +123,11 @@ for gal in gals:
         has_12m = len(glob.glob(this_dir+gal+'*12m_co21.ms')) > 0
         has_7m = len(glob.glob(this_dir+gal+'*7m_co21.ms')) > 0
         if has_12m or has_7m:
-            casalog.post("", "WARN", "")
-            casalog.post("... You requested to only stage new data.", "WARN", "")
-            casalog.post("... I found an existing file for "+gal+" .", "WARN", "")
-            casalog.post("... I will skip that galaxy.", "WARN", "")
-            casalog.post("", "WARN", "")
+            casalog.post("", "WARN")
+            casalog.post("... You requested to only stage new data.", "WARN")
+            casalog.post("... I found an existing file for "+gal+" .", "WARN")
+            casalog.post("... I will skip that galaxy.", "WARN")
+            casalog.post("", "WARN")
             continue
 
     # Copy the calibrated data to the working directory. Split out the
