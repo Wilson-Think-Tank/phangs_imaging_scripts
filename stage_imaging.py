@@ -11,7 +11,6 @@ import glob
 
 casa_log_origin = "stage_imaging"
 casalog.showconsole(onconsole=False)
-casalog.origin(casa_log_origin)
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
@@ -124,6 +123,7 @@ for gal in gals:
         has_12m = len(glob.glob(this_dir+gal+'*12m_co21.ms')) > 0
         has_7m = len(glob.glob(this_dir+gal+'*7m_co21.ms')) > 0
         if has_12m or has_7m:
+            casalog.origin(casa_log_origin)
             casalog.post("", "WARN")
             casalog.post("... You requested to only stage new data.", "WARN")
             casalog.post("... I found an existing file for "+gal+" .", "WARN")
@@ -143,7 +143,6 @@ for gal in gals:
             do_statwt=False,
             quiet=False,
             data_dirs=data_dirs)
-        casalog.origin(casa_log_origin)
 
     # Optionally, run custom scripts at this stage. This could, for
     # example, flag data or carry out uv continuum subtraction. The
@@ -156,7 +155,6 @@ for gal in gals:
         scripts_for_this_gal = glob.glob('../scripts/custom_staging_scripts/'+gal+'_staging_script.py')
         for this_script in scripts_for_this_gal:
             execfile(this_script)
-        casalog.origin(casa_log_origin)
 
     # Subtract the continuum, avoiding lines and averaging all
     # frequencies in each SPW together. This step also uses statwt to
@@ -168,7 +166,6 @@ for gal in gals:
             just_array=just_array,
             quiet=False,
             append_ext=cont_ext)
-        casalog.origin(casa_log_origin)
 
         line_ext = '.contsub'
 
@@ -184,7 +181,6 @@ for gal in gals:
             quiet=False,
             append_ext=line_ext,
             lines=lines)
-        casalog.origin(casa_log_origin)
 
     # Concatenate the extracted lines into the measurement sets that
     # we will use for imaging. This step also makes a "channel 0"
@@ -196,7 +192,6 @@ for gal in gals:
             just_array=just_array,
             quiet=False,
             lines=lines)
-        casalog.origin(casa_log_origin)
 
     # Extract the continuum, avoiding lines and averaging all
     # frequencies in each SPW together. This step also uses statwt to
@@ -209,14 +204,12 @@ for gal in gals:
             quiet=False,
             do_statwt=True,
             append_ext=cont_ext)
-        casalog.origin(casa_log_origin)
 
     if do_concat_cont:
         pp.concat_phangs_continuum(
             gal=gal,
             just_array=just_array,
             quiet=False)
-        casalog.origin(casa_log_origin)
 
     # Remove intermediate files. The big space-savers here are the
     # initial copies of the data. The data after frequency averaging
@@ -228,4 +221,3 @@ for gal in gals:
         pp.cleanup_phangs_staging(
             gal=gal,
             just_array=just_array)
-        casalog.origin(casa_log_origin)

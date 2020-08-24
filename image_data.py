@@ -20,7 +20,6 @@ import glob
 
 casa_log_origin = "image_data"
 casalog.showconsole(onconsole=False)
-casalog.origin(casa_log_origin)
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
@@ -148,11 +147,13 @@ for gal in gals:
     
     if len(only) > 0:
         if only.count(gal) == 0:
+            casalog.origin(casa_log_origin)
             casalog.post("Skipping "+gal, "INFO")
             continue
 
     if len(skip) > 0:
         if skip.count(gal) > 0:
+            casalog.origin(casa_log_origin)
             casalog.post("Skipping "+gal, "INFO")
             continue
 
@@ -172,6 +173,7 @@ for gal in gals:
 
         if len(just_array) > 0:
             if array not in just_array:
+                casalog.origin(casa_log_origin)
                 casalog.post("Skipping "+array, "INFO")
                 continue
 
@@ -179,9 +181,11 @@ for gal in gals:
 
             if len(just_product) > 0:
                 if just_product.count(product) == 0:
+                    casalog.origin(casa_log_origin)
                     casalog.post("Skipping "+product, "INFO")
                     continue
 
+            casalog.origin(casa_log_origin)
             casalog.post(gal + " " + array + " " + product, "INFO")
 
             this_dir = pp.dir_for_gal(gal)
@@ -193,6 +197,7 @@ for gal in gals:
                 out_image_name = this_dir+gal+'_'+array+'_'+product+'.image'
                 has_image = len(glob.glob(out_image_name)) > 0
                 if has_image:
+                    casalog.origin(casa_log_origin)
                     casalog.post("", "WARN")
                     casalog.post("... You requested to only image new data.", "WARN")
                     casalog.post("... I found an existing image named "+out_image_name+" .", "WARN")
@@ -207,7 +212,6 @@ for gal in gals:
                 product=product,
                 tag='',
                 forceSquare=forceSquare)
-            casalog.origin(casa_log_origin)
 
             if clean_call == None:
                 continue
@@ -223,4 +227,3 @@ for gal in gals:
                 run_singlescale_clean=run_singlescale_clean,
                 do_export_to_fits=export_to_fits,
                 )
-            casalog.origin(casa_log_origin)

@@ -8,7 +8,6 @@ import glob
 
 casa_log_origin = "process_cubes"
 casalog.showconsole(onconsole=False)
-casalog.origin(casa_log_origin)
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
@@ -107,14 +106,14 @@ cutoff = 0.25
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 if rebuild_directories:
     pcp.rebuild_directories(outroot_dir=outroot_dir)
-    casalog.origin(casa_log_origin)
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Loop over all galaxies to stage, process, mosaic, and cleanup
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 for this_loop in ['stage', 'process', 'feather', 'cleanup']:
-    
+
+    casalog.origin(casa_log_origin)
     casalog.post("", "INFO")
     casalog.post("Looping over all galaxies and products.", "INFO")
     casalog.post("... this loop is to: "+this_loop, "INFO")
@@ -136,6 +135,7 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
             not_in_list = (only.count(gal_part) == 0) and \
                 (only.count(whole_gal) == 0)
             if not_in_list:
+                casalog.origin(casa_log_origin)
                 casalog.post("Skipping galaxy part "+gal_part, "INFO")
                 continue
 
@@ -143,6 +143,7 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
             in_list = (skip.count(gal_part) > 0) or \
                 (skip.count(whole_gal) > 0)
             if in_list:
+                casalog.origin(casa_log_origin)
                 casalog.post("Skipping galaxy part "+gal_part, "INFO")
                 continue
 
@@ -158,6 +159,7 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
             if gal_part == last:
                 after_last = True
 
+        casalog.origin(casa_log_origin)
         casalog.post("Processing galaxy part: "+gal_part, "INFO")
         casalog.post("... part of whole galaxy: "+whole_gal, "INFO")
 
@@ -165,9 +167,11 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
             
             if len(just_product) > 0:
                 if just_product.count(product) == 0:
+                    casalog.origin(casa_log_origin)
                     casalog.post("... skipping line/product: "+product, "INFO")
                     continue
-                        
+
+            casalog.origin(casa_log_origin)
             casalog.post("... processing line/product: "+product, "INFO")
 
             if this_loop == 'stage' and stage_singledish:
@@ -176,15 +180,16 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                     root_dir = outroot_dir, 
                     overwrite=True
                     )
-                casalog.origin(casa_log_origin)
 
             for array in full_array_list:
 
                 if len(just_array) > 0:
                     if just_array.count(array) == 0:
+                        casalog.origin(casa_log_origin)
                         casalog.post("... ... skipping array "+array, "INFO")
                         continue
 
+                casalog.origin(casa_log_origin)
                 casalog.post("... ... processing array: "+array, "INFO")
 
                 if this_loop == 'stage' and stage_cubes:
@@ -197,7 +202,6 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         root_dir = outroot_dir, 
                         overwrite=True
                         )
-                    casalog.origin(casa_log_origin)
                     
                 if this_loop == 'process' and primary_beam_correct:
                     if (array == '7m+tp'
@@ -209,7 +213,6 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         root_dir=outroot_dir,
                         overwrite=True, cutoff=cutoff,
                         )
-                    casalog.origin(casa_log_origin)
 
                 if this_loop == 'process' and convolve_to_round_beam:
                     if (array == '7m+tp'
@@ -221,7 +224,6 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         root_dir=outroot_dir,
                         overwrite=True
                         )
-                    casalog.origin(casa_log_origin)
 
                 if this_loop == 'feather' and prep_for_feather:
                     if (array == '12m_ext'
@@ -236,7 +238,6 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         root_dir=outroot_dir,
                         overwrite=True
                         )
-                    casalog.origin(casa_log_origin)
 
                 if this_loop == 'feather' and feather_data:
                     if (array == '12m_ext'
@@ -251,7 +252,6 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         root_dir=outroot_dir,
                         overwrite=True, cutoff=cutoff,
                         )
-                    casalog.origin(casa_log_origin)
 
                 if this_loop == 'feather' and reverse_feather_data:
                     if (array == '12m_ext'
@@ -266,7 +266,6 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         root_dir=outroot_dir,
                         overwrite=True, cutoff=cutoff,
                         )
-                    casalog.origin(casa_log_origin)
                 
                 if this_loop == 'cleanup' and cleanup_cubes:
                     pcp.phangs_cleanup_cubes(
@@ -274,4 +273,3 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         root_dir=outroot_dir,
                         overwrite=True
                         )
-                    casalog.origin(casa_log_origin)

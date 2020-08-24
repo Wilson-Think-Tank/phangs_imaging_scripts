@@ -1,4 +1,4 @@
-# NB: CASA doesn't always include the pwd in the module search path. I
+x# NB: CASA doesn't always include the pwd in the module search path. I
 # had to modify my init.py file to get this to import. See the README.
 
 import os
@@ -54,24 +54,26 @@ def rebuild_directories(outroot_dir=None):
     Reset and rebuild the directory structure.
     """
 
-    casalog.origin(casa_log_origin)
-
     log_file = casalog.logfile()
     
     if outroot_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Specify a root directory.", "SEVERE", "rebuild_directories")
         return
 
     check_string = raw_input("Reseting directory structure in "+\
                                  outroot_dir+". Type 'Yes' to confirm.")
     if check_string != "Yes":
+        casalog.origin(casa_log_origin)
         casalog.post("Aborting", "SEVERE", "rebuild_directories")
         return
 
     if os.path.isdir(outroot_dir) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Got make "+outroot_dir+" manually. Then I will make the subdirectories.", "INFO", "rebuild_directories")
 
     for subdir in ['raw/','process/','products/']:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+outroot_dir+subdir+" >> "+log_file+" 2>&1")
         os.system('mkdir --parents '+outroot_dir+subdir+" >> "+log_file+" 2>&1")
 
@@ -89,10 +91,9 @@ def phangs_stage_cubes(
     into CASA as .image files.
     """
 
-    casalog.origin(casa_log_origin)
-
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "phangs_stage_cubes")
         return
     
@@ -103,21 +104,22 @@ def phangs_stage_cubes(
     out_dir = root_dir+'raw/'
     out_cube_name = out_dir+gal+'_'+array+'_'+product+'.image'
     out_pb_name = out_dir+gal+'_'+array+'_'+product+'.pb'
-    
+
+    casalog.origin(casa_log_origin)
     casalog.post("... importing data for "+in_cube_name, "INFO", "phangs_stage_cubes")
 
     if os.path.isfile(in_cube_name):
         importfits(fitsimage=in_cube_name, imagename=out_cube_name,
                    zeroblanks=True, overwrite=overwrite)
-        casalog.origin(casa_log_origin)
     else:
+        casalog.origin(casa_log_origin)
         casalog.post("File not found "+in_cube_name, "SEVERE", "phangs_stage_cubes")
 
     if os.path.isfile(in_pb_name):
         importfits(fitsimage=in_pb_name, imagename=out_pb_name,
                    zeroblanks=True, overwrite=overwrite)
-        casalog.origin(casa_log_origin)
     else:
+        casalog.origin(casa_log_origin)
         casalog.post("Directory not found "+in_pb_name, "SEVERE", "phangs_stage_cubes")
 
 def phangs_stage_singledish(
@@ -127,21 +129,23 @@ def phangs_stage_singledish(
     Copy the single dish data for further processing
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
 
     if gal is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "phangs_stage_singledish")
         return
     
     sdk = read_singledish_key()
     if (gal in sdk.keys()) == False:
+        casalog.origin(casa_log_origin)
         casalog.post(gal+" not found in single dish key.", "SEVERE", "phangs_stage_singledish")
         return
     
     this_key = sdk[gal]
     if (product in this_key.keys()) == False:
+        casalog.origin(casa_log_origin)
         casalog.post(product+" not found in single dish key for "+gal, "SEVERE", "phangs_stage_singledish")
         return
     
@@ -149,13 +153,14 @@ def phangs_stage_singledish(
     
     sdfile_out = root_dir+'raw/'+gal+'_tp_'+product+'.image'    
 
+    casalog.origin(casa_log_origin)
     casalog.post("... importing single dish data for "+sdfile_in, "INFO", "phangs_stage_singledish")
 
     importfits(fitsimage=sdfile_in, imagename=sdfile_out+'.temp',
                zeroblanks=True, overwrite=overwrite)
-    casalog.origin(casa_log_origin)
 
     if overwrite:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+sdfile_out+" >> "+log_file+" 2>&1")
     imsubimage(imagename=sdfile_out+'.temp', outfile=sdfile_out,
                dropdeg=True)
@@ -173,14 +178,13 @@ def phangs_primary_beam_correct(
     Construct primary-beam corrected images using PHANGS naming conventions.
     """
 
-    casalog.origin(casa_log_origin)
-
     input_dir = root_dir+'raw/'
     input_cube_name = input_dir+gal+'_'+array+'_'+product+'.image'
     input_pb_name = input_dir+gal+'_'+array+'_'+product+'.pb'
     output_dir = root_dir+'process/'
     output_cube_name = output_dir+gal+'_'+array+'_'+product+'_pbcorr.image'
 
+    casalog.origin(casa_log_origin)
     casalog.post("", "INFO", "phangs_primary_beam_correct")
     casalog.post("... producing a primary beam corrected image for "+input_cube_name, "INFO", "phangs_primary_beam_correct")
     casalog.post("", "INFO", "phangs_primary_beam_correct")
@@ -190,7 +194,6 @@ def phangs_primary_beam_correct(
         pbfile=input_pb_name,
         outfile=output_cube_name,
         cutoff=cutoff, overwrite=overwrite)
-    casalog.origin(casa_log_origin)
 
 def primary_beam_correct(
     infile=None, pbfile=None, outfile=None, 
@@ -199,26 +202,28 @@ def primary_beam_correct(
     Construct a primary-beam corrected image.
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
 
     if infile is None or pbfile is None or outfile is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "primary_beam_correct")
         return
 
     if os.path.isdir(infile) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Input file missing - "+infile, "SEVERE", "primary_beam_correct")
         return
 
     if os.path.isdir(pbfile) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Primary beam file missing - "+pbfile, "SEVERE", "primary_beam_correct")
         return
 
     if overwrite:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
 
     impbcor(imagename=infile, pbimage=pbfile, outfile=outfile, cutoff=cutoff)
-    casalog.origin(casa_log_origin)
 
 def phangs_convolve_to_round_beam(
     gal=None, array=None, product=None, root_dir=None, 
@@ -229,10 +234,9 @@ def phangs_convolve_to_round_beam(
     cube, forcing the same beam for both.
     """
 
-    casalog.origin(casa_log_origin)
-
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "phangs_convolve_to_round_beam")
         return
     
@@ -241,6 +245,7 @@ def phangs_convolve_to_round_beam(
     output_dir = root_dir+'process/'
     output_cube_name = output_dir+gal+'_'+array+'_'+product+'_pbcorr_round.image'
 
+    casalog.origin(casa_log_origin)
     casalog.post("", "INFO", "phangs_convolve_to_round_beam")
     casalog.post("... convolving to a round beam for "+input_cube_name, "INFO", "phangs_convolve_to_round_beam")
     casalog.post("", "INFO", "phangs_convolve_to_round_beam")
@@ -251,8 +256,8 @@ def phangs_convolve_to_round_beam(
         outfile=output_cube_name,
         force_beam=force_beam,
         overwrite=overwrite)
-    casalog.origin(casa_log_origin)
 
+    casalog.origin(casa_log_origin)
     casalog.post("", "INFO", "phangs_convolve_to_round_beam")
     casalog.post("... found beam of "+str(round_beam)+" arcsec. Forcing flat cube to this.", "INFO", "phangs_convolve_to_round_beam")
     casalog.post("", "INFO", "phangs_convolve_to_round_beam")
@@ -267,7 +272,6 @@ def phangs_convolve_to_round_beam(
         outfile=output_cube_name,
         force_beam=round_beam,
         overwrite=overwrite)
-    casalog.origin(casa_log_origin)
     
 def convolve_to_round_beam(
     infile=None, outfile=None, force_beam=None, overwrite=False):
@@ -275,27 +279,28 @@ def convolve_to_round_beam(
     Convolve supplied image to have a round beam.
     """
 
-    casalog.origin(casa_log_origin)
-    
     if infile is None or outfile is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "convolve_to_round_beam")
         return
 
     if os.path.isdir(infile) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Input file missing - "+infile, "SEVERE", "convolve_to_round_beam")
         return    
 
     if force_beam is None:
         hdr = imhead(infile)
-        casalog.origin(casa_log_origin)
 
         if (hdr['axisunits'][0] != 'rad'):
+            casalog.origin(casa_log_origin)
             casalog.post("Based on CASA experience. I expected units of radians.", "SEVERE", "convolve_to_round_beam")
             casalog.post("I did not find this. Returning. Adjust code or investigate file "+infile, "SEVERE", "convolve_to_round_beam")
             return
         pixel_as = abs(hdr['incr'][0]/np.pi*180.0*3600.)
 
         if (hdr['restoringbeam']['major']['unit'] != 'arcsec'):
+            casalog.origin(casa_log_origin)
             casalog.post("Based on CASA experience. I expected units of arcseconds for the beam.", "SEVERE", "convolve_to_round_beam")
             casalog.post("I did not find this. Returning. Adjust code or investigate file "+infile, "SEVERE", "convolve_to_round_beam")
             return    
@@ -312,7 +317,6 @@ def convolve_to_round_beam(
              pa='0.0deg',
              overwrite=overwrite
              )
-    casalog.origin(casa_log_origin)
 
     return target_bmaj
 
@@ -327,11 +331,11 @@ def prep_for_feather(
     Prepare the single dish data for feathering
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
     
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "prep_for_feather")
         return    
 
@@ -340,14 +344,17 @@ def prep_for_feather(
     pbfile_name = root_dir+'raw/'+gal+'_'+array+'_'+product+'.pb'    
 
     if (os.path.isdir(sdfile_in) == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Single dish file not found: "+sdfile_in, "SEVERE", "prep_for_feather")
         return
 
     if (os.path.isdir(interf_in) == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Interferometric file not found: "+interf_in, "SEVERE", "prep_for_feather")
         return
 
     if (os.path.isdir(pbfile_name) == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Primary beam file not found: "+pbfile_name, "SEREVE", "prep_for_feather")
         return
 
@@ -360,11 +367,11 @@ def prep_for_feather(
              axes=[-1],
              interpolation='cubic',
              overwrite=overwrite)
-    casalog.origin(casa_log_origin)
 
     # Taper the TP data by the primary beam.
     taperfile_out = root_dir+'process/'+gal+'_tp_'+product+'_taper_'+array+'.image'
     if overwrite:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+taperfile_out+" >> "+log_file+" 2>&1")
 
     impbcor(imagename=sdfile_out, 
@@ -372,7 +379,6 @@ def prep_for_feather(
             outfile=taperfile_out, 
             mode='multiply',
             stokes='I')
-    casalog.origin(casa_log_origin)
 
     return
 
@@ -383,11 +389,11 @@ def phangs_feather_data(
     Feather the interferometric and total power data.
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
 
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "phangs_feather_data")
         return    
 
@@ -396,14 +402,17 @@ def phangs_feather_data(
     pbfile_name = root_dir+'raw/'+gal+'_'+array+'_'+product+'.pb' 
 
     if (os.path.isdir(sdfile_in) == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Single dish file not found: "+sdfile_in, "SEVERE", "phangs_feather_data")
         return
         
     if (os.path.isdir(interf_in) == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Interferometric file not found: "+interf_in, "SEVERE", "phangs_feather_data")
         return
 
     if (os.path.isdir(pbfile_name) == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Primary beam file not found: "+pbfile_name, "SEVERE", "phangs_feather_data")
         return
 
@@ -411,7 +420,8 @@ def phangs_feather_data(
     outfile_name = root_dir+'process/'+gal+'_'+array+'+tp_'+product+ \
         '_flat_round.image'
 
-    if overwrite:        
+    if overwrite:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+outfile_name+" >> "+log_file+" 2>&1")
     os.system('rm -rf '+outfile_name+'.temp'+" >> "+log_file+" 2>&1")
     feather(imagename=outfile_name+'.temp',
@@ -419,7 +429,6 @@ def phangs_feather_data(
             lowres=sdfile_in,
             sdfactor=1.0,
             lowpassfiltersd=False)
-    casalog.origin(casa_log_origin)
     imsubimage(imagename=outfile_name+'.temp', outfile=outfile_name,
                dropdeg=True)
     casalog.origin(casa_log_origin)
@@ -430,16 +439,17 @@ def phangs_feather_data(
     outfile_name = root_dir+'process/'+gal+'_'+array+'+tp_'+product+ \
         '_pbcorr_round.image'
     
-    if overwrite:        
+    if overwrite:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+outfile_name+" >> "+log_file+" 2>&1")
 
+    casalog.origin(casa_log_origin)
     casalog.post(infile_name, "INFO", "phangs_feather_data")
     casalog.post(pbfile_name, "INFO", "phangs_feather_data")
     impbcor(imagename=infile_name,
             pbimage=pbfile_name, 
             outfile=outfile_name, 
             mode='divide', cutoff=cutoff)
-    casalog.origin(casa_log_origin)
 
 def chris_feather_data(
     gal=None, array=None, product=None, root_dir=None, 
@@ -448,11 +458,11 @@ def chris_feather_data(
     Feather the pbcorr'd interferometric and aligned total power data
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
 
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "chris_feather_data")
         return    
 
@@ -461,14 +471,17 @@ def chris_feather_data(
     pbfile_name = root_dir+'raw/'+gal+'_'+array+'_'+product+'.pb' 
 
     if (os.path.isdir(sdfile_in) == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Single dish file not found: "+sdfile_in, "SEVERE", "chris_feather_data")
         return
         
     if (os.path.isdir(interf_in) == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Interferometric file not found: "+interf_in, "SEVERE", "chris_feather_data")
         return
 
     if (os.path.isdir(pbfile_name) == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Primary beam file not found: "+pbfile_name, "SEVERE", "chris_feather_data")
         return
 
@@ -476,7 +489,8 @@ def chris_feather_data(
     outfile_name = root_dir+'process/'+gal+'_'+array+'+tp_'+product+ \
         '_pbcorr_round.image'
 
-    if overwrite:        
+    if overwrite:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+outfile_name+" >> "+log_file+" 2>&1")
     os.system('rm -rf '+outfile_name+'.temp'+" >> "+log_file+" 2>&1")
     feather(imagename=outfile_name+'.temp',
@@ -484,7 +498,6 @@ def chris_feather_data(
             lowres=sdfile_in,
             sdfactor=1.0,
             lowpassfiltersd=False)
-    casalog.origin(casa_log_origin)
     imsubimage(imagename=outfile_name+'.temp', outfile=outfile_name,
                dropdeg=True)
     casalog.origin(casa_log_origin)
@@ -495,9 +508,11 @@ def chris_feather_data(
     outfile_name = root_dir+'process/'+gal+'_'+array+'+tp_'+product+ \
         '_flat_round.image'
     
-    if overwrite:        
+    if overwrite:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+outfile_name+" >> "+log_file+" 2>&1")
 
+    casalog.origin(casa_log_origin)
     casalog.post(infile_name, "INFO", "chris_feather_data")
     casalog.post(pbfile_name, "INFO", "chris_feather_data")
     impbcor(imagename=infile_name,
@@ -505,7 +520,6 @@ def chris_feather_data(
             outfile=outfile_name, 
             mode='multiply', cutoff=-1.0)
 #            mode='divide', cutoff=cutoff)
-    casalog.origin(casa_log_origin)
 
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # CLEANUP
@@ -517,7 +531,6 @@ def convert_jytok(
     Convert a cube from Jy/beam to K.
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
 
     c = 2.99792458e10
@@ -525,36 +538,42 @@ def convert_jytok(
     kb = 1.380658e-16
 
     if infile is None or (outfile is None and inplace==False):
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "convert_jytok")
         return
     
     if os.path.isdir(infile) == False:
+        casalog.origin(casa_log_origin)
         csalog.post("Input file not found: "+infile, "SEVERE", "convert_jytok")
         return
     
     if inplace == False:
         if overwrite:
+            casalog.origin(casa_log_origin)
             os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
         
         if os.path.isdir(outfile):
+            casalog.origin(casa_log_origin)
             casalog.post("Output file already present: "+outfile, "SEVERE", "convert_jytok")
             return
 
+        casalog.origin(casa_log_origin)
         os.system('cp -r '+infile+' '+outfile+" >> "+log_file+" 2>&1")
         target_file = outfile
     else:
         target_file = infile
 
     hdr = imhead(target_file, mode='list')
-    casalog.origin(casa_log_origin)
     unit = hdr['bunit']
     if unit != 'Jy/beam':
+        casalog.origin(casa_log_origin)
         casalog.post("Unit is not Jy/beam. Returning.", "SEVERE", "convert_jytok")
         return
 
     #restfreq_hz = hdr['restfreq'][0]
 
     if hdr['cunit3'] != 'Hz':
+        casalog.origin(casa_log_origin)
         casalog.post("I expected frequency as the third axis but did not find it.", "SEVERE", "convert_jytok")
         casalog.post("Returning.", "SEVERE", "convert_jytok")
         return
@@ -568,6 +587,7 @@ def convert_jytok(
     
     bmaj_unit = hdr['beammajor']['unit']
     if bmaj_unit != 'arcsec':
+        casalog.origin(casa_log_origin)
         casalog.post("Beam unit is not arcsec, which I expected. Returning.", "SEVERE", "convert_jytok")
         casalog.post("Unit instead is "+bmaj_unit, "SEVERE", "convert_jytok")
         return    
@@ -586,10 +606,8 @@ def convert_jytok(
     myia.putchunk(vals)
     myia.setbrightnessunit("K")
     myia.close()
-    casalog.origin(casa_log_origin)
 
     imhead(target_file, mode='put', hdkey='JTOK', hdvalue=jtok)
-    casalog.origin(casa_log_origin)
 
     return
 
@@ -599,20 +617,22 @@ def trim_cube(
     Trim and rebin a cube to smaller size.
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
     
     if infile is None or outfile is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "trim_cube")
         return
     
     if os.path.isdir(infile) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Input file not found: "+infile, "SEVERE", "trim_cube")
         return
 
     # First, rebin if needed
     hdr = imhead(infile)
     if (hdr['axisunits'][0] != 'rad'):
+        casalog.origin(casa_log_origin)
         casalog.post("Based on CASA experience. I expected units of radians.", "SEVERE", "trim_cube")
         casalog.post("I did not find this. Returning. Adjust code or investigate file "+infile, "SEVERE", "trim_cube")
         return
@@ -620,6 +640,7 @@ def trim_cube(
     pixel_as = abs(hdr['incr'][0]/np.pi*180.0*3600.)
 
     if (hdr['restoringbeam']['major']['unit'] != 'arcsec'):
+        casalog.origin(casa_log_origin)
         casalog.post("Based on CASA experience. I expected units of arcseconds for the beam.", "SEVERE", "trim_cube")
         casalog.post("I did not find this. Returning. Adjust code or investigate file "+infile, "SEVERE", "trim_cube")
         return    
@@ -636,8 +657,8 @@ def trim_cube(
             dropdeg=True,
             overwrite=overwrite,
             )
-        casalog.origin(casa_log_origin)
     else:
+        casalog.origin(casa_log_origin)
         os.system('cp -r '+infile+' '+outfile+'.temp'+" >> "+log_file+" 2>&1")
 
     # Figure out the extent of the image inside the cube
@@ -645,7 +666,6 @@ def trim_cube(
     myia.open(outfile+'.temp')
     mask = myia.getchunk(getmask=True)    
     myia.close()
-    casalog.origin(casa_log_origin)
 
     this_shape = mask.shape
 
@@ -665,10 +685,12 @@ def trim_cube(
     box_string = ''+str(xmin)+','+str(ymin)+','+str(xmax)+','+str(ymax)
     chan_string = ''+str(zmin)+'~'+str(zmax)
 
+    casalog.origin(casa_log_origin)
     casalog.post("... ... ... box selection: "+box_string, "INFO", "trim_cube")
     casalog.post("... ... ... channel selection: "+chan_string, "INFO", "trim_cube")
 
     if overwrite:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
         imsubimage(
         imagename=outfile+'.temp',
@@ -676,8 +698,8 @@ def trim_cube(
         box=box_string,
         chans=chan_string,
         )
-        casalog.origin(casa_log_origin)
-    
+
+    casalog.origin(casa_log_origin)
     os.system('rm -rf '+outfile+'.temp'+" >> "+log_file+" 2>&1")
     
 def phangs_cleanup_cubes(
@@ -688,17 +710,18 @@ def phangs_cleanup_cubes(
     Clean up cubes.
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
 
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "phangs_cleanup_cubes")
         return
 
 #    If necessary, create the galaxy subdirectory in 'products/'  : cdw
     
     if os.path.isdir(root_dir+'products/'+gal+'/') == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Making product sudirectory for  "+gal, "INFO", "phangs_cleanup_cubes")
         os.system('mkdir '+root_dir+'products/'+gal+'/'+" >> "+log_file+" 2>&1")
 
@@ -711,6 +734,7 @@ def phangs_cleanup_cubes(
         outfile_fits = rootfits+'_round_k.fits'
     
         if os.path.isdir(infile) == False:
+            casalog.origin(casa_log_origin)
             casalog.post("File does not exist: "+infile, "SEVERE", "phangs_cleanup_cubes")
             casalog.post("Returning.", "SEVERE", "phangs_cleanup_cubes")
             return
@@ -720,19 +744,16 @@ def phangs_cleanup_cubes(
         trim_cube(infile=infile, outfile=outfile, 
                   overwrite=overwrite, inplace=False,
                   min_pixperbeam=min_pixeperbeam)
-        casalog.origin(casa_log_origin)
 
         # Convert to Kelvin
 
         convert_jytok(infile=outfile, inplace=True)
-        casalog.origin(casa_log_origin)
 
         # Export to FITS
     
         exportfits(imagename=outfile, fitsimage=outfile_fits,
                    velocity=True, overwrite=True, dropstokes=True, 
                    dropdeg=True, bitpix=-32)
-        casalog.origin(casa_log_origin)
     
         # Clean up headers
 
@@ -774,11 +795,13 @@ def phangs_cleanup_cubes(
         if bmaj != bmin:
             frac_dev = np.abs(bmaj-bmin)/bmaj
             if frac_dev <= roundbeam_tol:
+                casalog.origin(casa_log_origin)
                 casalog.post("Rounding beam.", "INFO", "phangs_cleanup_cubes")
                 hdr['BMAJ'] = bmaj
                 hdr['BMIN'] = bmaj
                 hdr['BPA'] = 0.0
             else:
+                casalog.origin(casa_log_origin)
                 casalog.post("Beam too asymmetric to round.", "SEVERE", "phangs_cleanup_cubes")
                 casalog.post("... fractional deviation: "+str(frac_dev), "SEVERE", "phangs_cleanup_cubes")
                 
@@ -797,11 +820,11 @@ def phangs_cleanup_pbcubes(
     Clean up cubes.
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
 
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "phangs_cleanup_pbcubes")
         return
 
@@ -821,6 +844,7 @@ def phangs_cleanup_pbcubes(
         infile = root+'_flat_round.image'
 
         if os.path.isdir(infile) == False:
+            casalog.origin(casa_log_origin)
             casalog.post("File does not exist: "+infile, "SEVERE", "phangs_cleanup_pbcubes")
             casalog.post("Returning.", "SEVERE", "phangs_cleanup_pbcubes")
             return
@@ -828,6 +852,7 @@ def phangs_cleanup_pbcubes(
     # First, rebin if needed
         hdr = imhead(infile)
         if (hdr['axisunits'][0] != 'rad'):
+            casalog.origin(casa_log_origin)
             casalog.post("Based on CASA experience. I expected units of radians.", "SEVERE", "phangs_cleanup_pbcubes")
             casalog.post("I did not find this. Returning. Adjust code or investigate file "+infile, "SEVERE", "phangs_cleanup_pbcubes")
             return
@@ -835,6 +860,7 @@ def phangs_cleanup_pbcubes(
         pixel_as = abs(hdr['incr'][0]/np.pi*180.0*3600.)
 
         if (hdr['restoringbeam']['major']['unit'] != 'arcsec'):
+            casalog.origin(casa_log_origin)
             casalog.post("Based on CASA experience. I expected units of arcseconds for the beam.", "SEVERE", "phangs_cleanup_pbcubes")
             casalog.post("I did not find this. Returning. Adjust code or investigate file "+infile, "SEVERE", "phangs_cleanup_pbcubes")
             return    
@@ -850,6 +876,7 @@ def phangs_cleanup_pbcubes(
         infile = inroot+'.pb'
 
         if os.path.isdir(infile) == False:
+            casalog.origin(casa_log_origin)
             casalog.post("File does not exist: "+infile, "SEVERE", "phangs_cleanup_pbcubes")
             casalog.post("Returning.", "SEVERE", "phangs_cleanup_pbcubes")
             return
@@ -863,8 +890,8 @@ def phangs_cleanup_pbcubes(
                 dropdeg=True,
                 overwrite=overwrite,
                 )
-            casalog.origin(casa_log_origin)
         else:
+            casalog.origin(casa_log_origin)
             os.system('cp -r '+infile+' '+outfile+'.temp'+" >> "+log_file+" 2>&1")
 
     # Figure out the extent of the image inside the cube
@@ -872,7 +899,6 @@ def phangs_cleanup_pbcubes(
         myia.open(outfile+'.temp')
         mask = myia.getchunk(getmask=True)    
         myia.close()
-        casalog.origin(casa_log_origin)
 
         this_shape = mask.shape
     
@@ -892,10 +918,12 @@ def phangs_cleanup_pbcubes(
         box_string = ''+str(xmin)+','+str(ymin)+','+str(xmax)+','+str(ymax)
         chan_string = ''+str(zmin)+'~'+str(zmax)
 
+        casalog.origin(casa_log_origin)
         casalog.post("... ... ... box selection: "+box_string, "INFO", "phangs_cleanup_pbcubes")
         casalog.post("... ... ... channel selection: "+chan_string, "INFO", "phangs_cleanup_pbcubes")
 
         if overwrite:
+            casalog.origin(casa_log_origin)
             os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
             imsubimage(
                 imagename=outfile+'.temp',
@@ -903,8 +931,8 @@ def phangs_cleanup_pbcubes(
                 box=box_string,
                 chans=chan_string,
                 )
-            casalog.origin(casa_log_origin)
-    
+
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+outfile+'.temp'+" >> "+log_file+" 2>&1")
     
         # Export to FITS
@@ -912,7 +940,6 @@ def phangs_cleanup_pbcubes(
         exportfits(imagename=outfile, fitsimage=outfile_fits,
                    velocity=True, overwrite=True, dropstokes=True, 
                    dropdeg=True, bitpix=-32)
-        casalog.origin(casa_log_origin)
     
         # Clean up headers
 
@@ -960,16 +987,16 @@ def phangs_common_res_for_mosaic(
     Convolve multi-part cubes to a common res for mosaicking.
     """
 
-    casalog.origin(casa_log_origin)
-    
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "phangs_common_res_for_mosaic")
         return    
 
     # Look up parts
     this_mosaic_key = mosaic_key()
     if (gal in this_mosaic_key.keys()) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Galaxy "+gal+" not in mosaic key.", "SEVERE", "phangs_common_res_for_mosaic")
         return
     parts = this_mosaic_key[gal]
@@ -989,7 +1016,6 @@ def phangs_common_res_for_mosaic(
             infile_list=infile_list,
             outfile_list=outfile_list,
             overwrite=overwrite, target_res=target_res)
-        casalog.origin(casa_log_origin)
 
 def common_res_for_mosaic(
     infile_list = None, outfile_list = None,
@@ -998,43 +1024,47 @@ def common_res_for_mosaic(
     Convolve multi-part cubes to a common res for mosaicking.
     """
 
-    casalog.origin(casa_log_origin)
-    
     if (infile_list is None) or \
             (outfile_list is None):
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "common_res_for_mosaic")
         return    
     
     if len(infile_list) != len(outfile_list):
+        casalog.origin(casa_log_origin)
         casalog.post("Mismatch in input lists.", "SEVERE", "common_res_for_mosaic")
         return    
 
     for this_file in infile_list:
         if os.path.isdir(this_file) == False:
+            casalog.origin(casa_log_origin)
             casalog.post("File not found "+this_file, "SEVERE", "common_res_for_mosaic")
             return
     
     # Figure out target resolution if it is not supplied
 
     if target_res is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Calculating target resolution ... ", "INFO", "common_res_for_mosaic")
 
         bmaj_list = []
         pix_list = []
 
         for infile in infile_list:
+            casalog.origin(casa_log_origin)
             casalog.post("Checking "+infile, "INFO", "common_res_for_mosaic")
 
             hdr = imhead(infile)
-            casalog.origin(casa_log_origin)
 
             if (hdr['axisunits'][0] != 'rad'):
+                casalog.origin(casa_log_origin)
                 casalog.post("Based on CASA experience. I expected units of radians.", "SEVERE", "common_res_for_mosaic")
                 casalog.post("I did not find this. Returning. Adjust code or investigate file "+infile, "SEVERE", "common_res_for_mosaic")
                 return
             this_pixel = abs(hdr['incr'][0]/np.pi*180.0*3600.)
 
             if (hdr['restoringbeam']['major']['unit'] != 'arcsec'):
+                casalog.origin(casa_log_origin)
                 casalog.post("Based on CASA experience. I expected units of arcseconds for the beam.", "SEVERE", "common_res_for_mosaic")
                 casalog.post("I did not find this. Returning. Adjust code or investigate file "+infile, "SEVERE", "common_res_for_mosaic")
                 return
@@ -1052,6 +1082,7 @@ def common_res_for_mosaic(
     for ii in range(len(infile_list)):
         this_infile = infile_list[ii]
         this_outfile = outfile_list[ii]
+        casalog.origin(casa_log_origin)
         casalog.post("Convolving "+this_infile+' to '+this_outfile, "INFO", "common_res_for_mosaic")
         
         imsmooth(imagename=this_infile,
@@ -1062,7 +1093,6 @@ def common_res_for_mosaic(
              pa='0.0deg',
              overwrite=overwrite
              )
-        casalog.origin(casa_log_origin)
 
     return target_bmaj
 
@@ -1074,26 +1104,26 @@ def build_common_header(
     Build a target header to be used as a template by imregrid.
     """
 
-    casalog.origin(casa_log_origin)
-    
     if infile_list is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "build_common_header")
         return    
 
     # Logic to determine tuning parameters here if they aren't passed.
 
     if os.path.isdir(infile_list[0]) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("File not found "+infile_list[0], "SEVERE", "build_common_header")
         casalog.post("Returning.", "SEVERE", "build_common_header")
         return None
     target_hdr = imregrid(infile_list[0], template='get')
-    casalog.origin(casa_log_origin)
     
     # N.B. Could put a lot of general logic here, but we are usually
     # working in a pretty specific case.
 
     if (target_hdr['csys']['direction0']['units'][0] != 'rad') or \
             (target_hdr['csys']['direction0']['units'][1] != 'rad'):
+        casalog.origin(casa_log_origin)
         casalog.post("Based on CASA experience. I expected pixel units of radians.", "SEVERE", "build_common_header")
         casalog.post("I did not find this. Returning. Adjust code or investigate file "+infile_list[0], "SEVERE", "build_common_header")
         return
@@ -1118,6 +1148,7 @@ def build_common_header(
     target_hdr['csys']['direction0']['crpix'][1] = new_dec_ctr_pix
     
     if ra_axis_size > 1e4 or dec_axis_size > 1e4:
+        casalog.origin(casa_log_origin)
         casalog.post("This is a very big image you plan to create.", "WARN", "build_common_header")
         casalog.post(ra_axis_size, " x ", dec_axis_size, "WARN", "build_common_header")
         test = raw_input("Continue? Hit [y] if so.")
@@ -1138,6 +1169,7 @@ def align_for_mosaic(
 
     if infile_list is None or outfile_list is None or \
             target_hdr is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "build_common_header")
         return    
 
@@ -1146,6 +1178,7 @@ def align_for_mosaic(
         this_outfile = outfile_list[ii]        
 
         if os.path.isdir(this_infile) == False:
+            casalog.origin(casa_log_origin)
             casalog.post("File "+this_infile+" not found. Continuing.", "WARN", "build_common_header")
             continue
 
@@ -1156,7 +1189,6 @@ def align_for_mosaic(
                  axes=[-1],
                  interpolation='cubic',
                  overwrite=overwrite)
-        casalog.origin(casa_log_origin)
 
     return
 
@@ -1167,10 +1199,9 @@ def phangs_align_for_mosaic(
     Convolve multi-part cubes to a common res for mosaicking.
     """
 
-    casalog.origin(casa_log_origin)
-
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "phangs_align_for_mosaic")
         return    
     
@@ -1178,6 +1209,7 @@ def phangs_align_for_mosaic(
 
     this_mosaic_key = mosaic_key()
     if (gal in this_mosaic_key.keys()) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Galaxy "+gal+" not in mosaic key.", "SEVERE", "phangs_align_for_mosaic")
         return
     parts = this_mosaic_key[gal]
@@ -1187,6 +1219,7 @@ def phangs_align_for_mosaic(
 
     multipart_key = read_multipart_key()
     if (gal in multipart_key.keys()) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Galaxy "+gal+" not in multipart key.", "SEVERE", "phangs_align_for_mosaic")
         casalog.post("... working on a general header construction algorithm.", "SEVERE", "phangs_align_for_mosaic")
         casalog.post("... for now, go enter a center and size into the multipart key:", "SEVERE", "phangs_align_for_mosaic")
@@ -1219,13 +1252,11 @@ def phangs_align_for_mosaic(
                 infile_list = infile_list, 
                 ra_ctr = this_ra_ctr, dec_ctr = this_dec_ctr,
                 delta_ra = this_delta_ra, delta_dec = this_delta_dec)
-            casalog.origin(casa_log_origin)
             
         align_for_mosaic(
             infile_list = infile_list, 
             outfile_list = outfile_list,
             overwrite=overwrite, target_hdr=target_hdr)
-        casalog.origin(casa_log_origin)
 
         # Align primary beam images, too, to use as weight.
 
@@ -1248,7 +1279,6 @@ def phangs_align_for_mosaic(
             infile_list = infile_list, 
             outfile_list = outfile_list,
             overwrite=overwrite, target_hdr=target_hdr)
-        casalog.origin(casa_log_origin)
 
 def mosaic_aligned_data(
     infile_list = None, weightfile_list = None,
@@ -1258,11 +1288,11 @@ def mosaic_aligned_data(
     noise) weights using simple linear mosaicking.
     """
 
-    casalog.origin(casa_log_origin)
     log_file = casalog.logfile()
 
     if infile_list is None or weightfile_list is None or \
             outfile is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "mosaic_aligned_data")
         return    
 
@@ -1273,11 +1303,13 @@ def mosaic_aligned_data(
             os.path.isdir(sum_file) or \
             os.path.isdir(weight_file)) and \
             (overwrite == False):
+        casalog.origin(casa_log_origin)
         casalog.post("Output file present and overwrite off.", "SEVERE", "mosaic_aligned_data")
         casalog.post("Returning.", "SEVERE", "mosaic_aligned_data")
         return
 
     if overwrite:
+        casalog.origin(casa_log_origin)
         os.system('rm -rf '+outfile+'.temp'+" >> "+log_file+" 2>&1")
         os.system('rm -rf '+outfile+" >> "+log_file+" 2>&1")
         os.system('rm -rf '+sum_file+" >> "+log_file+" 2>&1")
@@ -1306,34 +1338,27 @@ def mosaic_aligned_data(
     immath(imagename = imlist, mode='evalexpr',
            expr=lel_exp_sum, outfile=sum_file,
            imagemd = imlist[0])
-    casalog.origin(casa_log_origin)
     
     myia = au.createCasaTool(iatool)
     myia.open(sum_file)
     myia.set(pixelmask=1)
     myia.close()
-    casalog.origin(casa_log_origin)
 
     immath(imagename = imlist, mode='evalexpr',
            expr=lel_exp_weight, outfile=weight_file)
-    casalog.origin(casa_log_origin)
     myia.open(weight_file)
     myia.set(pixelmask=1)
     myia.close()
-    casalog.origin(casa_log_origin)
 
     immath(imagename = [sum_file, weight_file], mode='evalexpr',
            expr='iif(IM1 > 0.0, IM0/IM1, 0.0)', outfile=outfile+'.temp',
            imagemd = sum_file)
-    casalog.origin(casa_log_origin)
 
     immath(imagename = weight_file, mode='evalexpr',
            expr='iif(IM0 > 0.0, 1.0, 0.0)', outfile=outfile+'.mask')
-    casalog.origin(casa_log_origin)
 
     imsubimage(imagename=outfile+'.temp', outfile=outfile,
                mask='"'+outfile+'.mask"', dropdeg=True)
-    casalog.origin(casa_log_origin)
 
 
 
@@ -1346,10 +1371,9 @@ def phangs_mosaic_data(
     Linearly mosaic multipart cubes.
     """
 
-    casalog.origin(casa_log_origin)
-
     if gal is None or array is None or product is None or \
             root_dir is None:
+        casalog.origin(casa_log_origin)
         casalog.post("Missing required input.", "SEVERE", "phangs_mosaic_data")
         return    
     
@@ -1357,6 +1381,7 @@ def phangs_mosaic_data(
 
     this_mosaic_key = mosaic_key()
     if (gal in this_mosaic_key.keys()) == False:
+        casalog.origin(casa_log_origin)
         casalog.post("Galaxy "+gal+" not in mosaic key.", "SEVERE", "phangs_mosaic_data")
         return
     parts = this_mosaic_key[gal]
@@ -1371,10 +1396,12 @@ def phangs_mosaic_data(
             infile = input_dir+this_part+'_'+array+'_'+product+'_'+this_ext+'_onmergegrid.image'
             wtfile = output_dir+this_part+'_'+array+'_'+product+'_'+this_ext+'_mergeweight.image'
             if (os.path.isdir(infile) == False):
+                casalog.origin(casa_log_origin)
                 casalog.post("Missing "+infile, "WARN", "phangs_mosaic_data")
                 casalog.post("Skipping.", "WARN", "phangs_mosaic_data")
                 continue
             if (os.path.isdir(wtfile) == False):
+                casalog.origin(casa_log_origin)
                 casalog.post("Missing "+wtfile, "WARN", "phangs_mosaic_data")
                 casalog.post("Skipping.", "WARN", "phangs_mosaic_data")
                 continue
@@ -1382,6 +1409,7 @@ def phangs_mosaic_data(
             wtfile_list.append(wtfile)
 
         if len(infile_list) == 0:
+            casalog.origin(casa_log_origin)
             casalog.post("No files to include in the mosaic. Returning.", "SEVERE", "phangs_mosaic_data")
             return
 
@@ -1390,4 +1418,3 @@ def phangs_mosaic_data(
         mosaic_aligned_data(
             infile_list = infile_list, weightfile_list = wtfile_list,
             outfile = outfile, overwrite=overwrite)
-        casalog.origin(casa_log_origin)

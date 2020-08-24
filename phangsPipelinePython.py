@@ -61,10 +61,9 @@ def get_uvdata_key(gal=None,
     calibrated data in that directory.
     """
 
-    casalog.origin(casa_log_origin)
-
     if gal == None:
         if quiet == False:
+            casalog.origin(casa_log_origin)
             casalog.post("Please specify a galaxy.", "SEVERE", "get_uvdata_key")
         return None
 
@@ -74,6 +73,7 @@ def get_uvdata_key(gal=None,
 
     if ms_key.has_key(gal) == False:
         if quiet == False:
+            casalog.origin(casa_log_origin)
             casalog.post("Galaxy "+gal+" not found in the measurement set key.", "SEVERE", "get_uvdata_key")
         return None
     gal_specific_key = ms_key[gal]
@@ -125,6 +125,7 @@ def get_uvdata_key(gal=None,
 
             components = this_calibrated_file.split('/calibrated/')
             if len(components) != 2:
+                casalog.origin(casa_log_origin)
                 casalog.post("", "WARN", "get_uvdata_key")
                 casalog.post("Something is wrong with file "+this_calibrated_file, "WARN", "get_uvdata_key")
                 casalog.post("We assume that there is one and only one /calibrated/ in the directory.", "WARN", "get_uvdata_key")
@@ -183,10 +184,9 @@ def dir_for_gal(gal=None,
     Return the working directory given a galaxy name. See above.
     """
 
-    casalog.origin(casa_log_origin)
-
     if gal == None:
         if quiet == False:
+            casalog.origin(casa_log_origin)
             casalog.post("Please specify a galaxy.", "SEVERE", "dir_for_gal")
         return
 
