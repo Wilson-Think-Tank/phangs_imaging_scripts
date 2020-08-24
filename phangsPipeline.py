@@ -863,6 +863,24 @@ def extract_line(in_file=None,
     os.system('rm -rf '+out_file+'.temp2'+" >> "+log_file+" 2>&1")
     os.system('rm -rf '+out_file+'.temp2.flagversions'+" >> "+log_file+" 2>&1")
 
+    # for the antennae to avoid high resolution 12 m data having a single
+    # flagged edge channel while the other configuration and array are not
+    # flagged (causing commonbeam in imaging to smooth to low resolution
+    # beam)
+    flagmanager(
+        vis=out_file,
+        mode="save",
+        versionname="phangsPipeline::extract_line",
+    )
+    msmd.open(out_file)
+    n_chan_for_flag = msmd.nchan(0)
+    msmd.done()
+    flagdata(
+        vis=out_file,
+        mode="manual",
+        spw="0:0;{:}".format(n_chan_for_flag - 1),
+    )
+
     # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
     # STEP 4. Re-weight the data using statwt
     # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
