@@ -9,6 +9,9 @@ import glob
 # CASA imports
 from taskinit import *
 
+casa_log_origin = "phangsPipelinePython"
+casalog.showconsole(onconsole=False)
+
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # Interface to the text file keys that steer the process
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
@@ -58,7 +61,7 @@ def get_uvdata_key(gal=None,
     calibrated data in that directory.
     """
 
-    casalog.origin("phangsPipelinePython")
+    casalog.origin(casa_log_origin)
 
     if gal == None:
         if quiet == False:
@@ -180,7 +183,7 @@ def dir_for_gal(gal=None,
     Return the working directory given a galaxy name. See above.
     """
 
-    casalog.origin("phangsPipelinePython")
+    casalog.origin(casa_log_origin)
 
     if gal == None:
         if quiet == False:

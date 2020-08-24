@@ -18,8 +18,9 @@ import phangsPipeline as pp
 import analysisUtils as au
 import glob
 
+casa_log_origin = "image_data"
 casalog.showconsole(onconsole=False)
-casalog.origin("image_data")
+casalog.origin(casa_log_origin)
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
@@ -45,9 +46,6 @@ last = ""
 #  - '12m_ext+12m_com+7m'
 #  - empty list (all of the above)
 just_array = [
-    '7m',
-    '12m_com',
-    '12m_com+7m',
 ]
 
 # ... set as the products to be handled. Valid choices for the basic
@@ -104,11 +102,11 @@ make_dirty_image=True
 forceSquare=False
 revert_to_dirty=False
 read_in_clean_mask=False
-run_multiscale_clean=True
+run_multiscale_clean=False
 revert_to_multiscale=False
-make_singlescale_mask=True
-run_singlescale_clean=True
-export_to_fits= True
+make_singlescale_mask=False
+run_singlescale_clean=False
+export_to_fits= False
 
 do_only_new = False
 
@@ -209,6 +207,7 @@ for gal in gals:
                 product=product,
                 tag='',
                 forceSquare=forceSquare)
+            casalog.origin(casa_log_origin)
 
             if clean_call == None:
                 continue
@@ -224,3 +223,4 @@ for gal in gals:
                 run_singlescale_clean=run_singlescale_clean,
                 do_export_to_fits=export_to_fits,
                 )
+            casalog.origin(casa_log_origin)
