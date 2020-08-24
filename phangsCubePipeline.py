@@ -1,4 +1,4 @@
-x# NB: CASA doesn't always include the pwd in the module search path. I
+# NB: CASA doesn't always include the pwd in the module search path. I
 # had to modify my init.py file to get this to import. See the README.
 
 import os
@@ -18,26 +18,16 @@ import analysisUtils as au
 from taskinit import *
 
 # Import specific CASA tasks
-from concat import concat
-from exportfits import exportfits
-from feather import feather
-from flagdata import flagdata
-from imhead import imhead
-from immath import immath
-from impbcor import impbcor
-from importfits import importfits
-from imrebin import imrebin
-from imregrid import imregrid
-from imsmooth import imsmooth
-from imstat import imstat
-from imsubimage import imsubimage
-from makemask import makemask
-from mstransform import mstransform
-from split import split
-from statwt import statwt
-from tclean import tclean
-from uvcontsub import uvcontsub
-from visstat import visstat
+from exportfits_cli import exportfits_cli as exportfits
+from feather_cli import feather_cli as feather
+from imhead_cli import imhead_cli as imhead
+from immath_cli import immath_cli as immath
+from impbcor_cli import impbcor_cli as impbcor
+from importfits_cli import importfits_cli as importfits
+from imrebin_cli import imrebin_cli as imrebin
+from imregrid_cli import imregrid_cli as imregrid
+from imsmooth_cli import imsmooth_cli as imsmooth
+from imsubimage_cli import imsubimage_cli as imsubimage
 from pipelineVersion import version as pipeVer
 # Physical constants
 sol_kms = 2.9979246e5

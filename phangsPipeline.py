@@ -17,21 +17,19 @@ import analysisUtils as au
 from taskinit import *
 
 # Import specific CASA tasks
-from concat import concat
-from exportfits import exportfits
-from flagdata import flagdata
-from imhead import imhead
-from immath import immath
-from imstat import imstat
-from imregrid import imregrid
-from importfits import importfits
-from makemask import makemask
-from mstransform import mstransform
-from split import split
-from statwt import statwt
-from tclean import tclean
-from uvcontsub import uvcontsub
-from visstat import visstat
+from concat_cli import concat_cli as concat
+from exportfits_cli import exportfits_cli as exportfits
+from flagdata_cli import flagdata_cli as flagdata
+from imhead_cli import imhead_cli as imhead
+from imstat_cli import imstat_cli as imstat
+from imregrid_cli import imregrid_cli as imregrid
+from importfits_cli import importfits_cli as importfits
+from mstransform_cli import mstransform_cli as mstransform
+from split_cli import split_cli as split
+from statwt_cli import statwt_cli as statwt
+from tclean_cli import tclean_cli as tclean
+from uvcontsub_cli import uvcontsub_cli as uvcontsub
+from visstat_cli import visstat_cli as visstat
 
 # Strings useful for antenna selection
 select_7m = 'CM*'
