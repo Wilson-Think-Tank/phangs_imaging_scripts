@@ -21,6 +21,14 @@ import glob
 casa_log_origin = "image_data"
 casalog.showconsole(onconsole=False)
 
+orig_log_path = casalog.logfile()
+log_dir = os.path.dirname(orig_log_path)
+orig_log_filename = os.path.basename(orig_log_path)
+orig_log_date = orig_log_filename[5:-4]
+staging_log_path = "{:}/{:}-stage_imaging.log".format(log_dir, orig_log_date)
+casalog.setlogfile(staging_log_path)
+casalog.version()
+
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Control Flow
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -227,3 +235,5 @@ for gal in gals:
                 run_singlescale_clean=run_singlescale_clean,
                 do_export_to_fits=export_to_fits,
                 )
+
+casalog.setlogfile(orig_log_path)
