@@ -2459,7 +2459,7 @@ def make_dirty_map(
     clean_call.niter = 0
     clean_call.reset = True
     clean_call.usemask = 'pb'
-    clean_call.logfile = clean_call.image_root+'_dirty.log'
+    clean_call.logfile = None
 
     clean_call.calcres = True
     clean_call.calcpsf = True
@@ -2665,10 +2665,7 @@ def clean_loop(
 
         # Set the log file
 
-        if log_ext != None:
-            clean_call.logfile = cube_root+"_loop_"+str(loop)+"_"+log_ext+".log"
-        else:
-            clean_call.logfile = None
+        clean_call.logfile = None
 
         # Save the previous version of the file
         save_copy_of_cube(
