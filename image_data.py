@@ -25,7 +25,7 @@ orig_log_path = casalog.logfile()
 log_dir = os.path.dirname(orig_log_path)
 orig_log_filename = os.path.basename(orig_log_path)
 orig_log_date = orig_log_filename[5:-4]
-staging_log_path = "{:}/{:}-stage_imaging.log".format(log_dir, orig_log_date)
+staging_log_path = "{:}/{:}-image_data.log".format(log_dir, orig_log_date)
 casalog.setlogfile(staging_log_path)
 casalog.version()
 
@@ -129,7 +129,7 @@ array_list = [
     '12m_ext',
     '12m_com+7m',
     '12m_ext+12m_com',
-    '12m_ext_12m_com+7m',
+    '12m_ext+12m_com+7m',
 ]
 
 product_list = [
