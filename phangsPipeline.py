@@ -20,6 +20,7 @@ from taskinit import *
 from concat_cli import concat_cli as concat
 from exportfits_cli import exportfits_cli as exportfits
 from flagdata_cli import flagdata_cli as flagdata
+from flagmanager_cli import flagmanager_cli as flagmanager
 from imhead_cli import imhead_cli as imhead
 from imstat_cli import imstat_cli as imstat
 from imregrid_cli import imregrid_cli as imregrid
@@ -906,9 +907,10 @@ def extract_line(in_file=None,
         mode="save",
         versionname="phangsPipeline::extract_line",
     )
-    msmd.open(out_file)
-    n_chan_for_flag = msmd.nchan(0)
-    msmd.done()
+    mymsmd = au.createCasaTool(msmdtool)    
+    mymsmd.open(out_file)
+    n_chan_for_flag = mymsmd.nchan(0)
+    mymsmd.close()
     flagdata(
         vis=out_file,
         mode="manual",
@@ -2898,7 +2900,7 @@ def buildPhangsCleanCall(
         clean_call.clean_mask_file = clean_file_name
     else:
         casalog.origin(casa_log_origin)
-        casalog.post("Clean mask not found "+clean_file_name, "SEVERE", "buildPhangsCleanCall")
+        casalog.post("Clean mask not found "+clean_file_name, "WARN", "buildPhangsCleanCall")
 
     # Return
 
