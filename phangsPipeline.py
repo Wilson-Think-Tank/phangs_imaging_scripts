@@ -2407,6 +2407,7 @@ class cleanCall:
                phasecenter=self.phase_center,
                cell=self.cell_size,
                imsize=self.image_size,
+               chanchunks=-1,
                gridder='mosaic',
                # Selection
                #antenna=self.antenna,
