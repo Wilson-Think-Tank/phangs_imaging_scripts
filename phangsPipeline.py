@@ -2888,6 +2888,8 @@ def buildPhangsCleanCall(
                     continue
                 scales_as_angle.append(float(token))
             clean_call.scales_as_angle = scales_as_angle
+        if this_override_dict.has_key('robust'):
+            clean_call.briggs_weight = float(this_override_dict['robust'])
 
     # Define the clean mask (note one mask per galaxy)
 
