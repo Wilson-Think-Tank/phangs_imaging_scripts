@@ -1978,8 +1978,8 @@ def estimate_cell_and_imsize(
 
     au_cellsize, au_imsize, au_centralField = \
         au.pickCellSize(in_file, imsize=True, npix=oversamp)
-    xextent = au_cellsize*au_imsize[0]*1.2
-    yextent = au_cellsize*au_imsize[1]*1.2
+    xextent = au_cellsize*au_imsize[0]
+    yextent = au_cellsize*au_imsize[1]
 
     # Make the cell size a nice round number
 

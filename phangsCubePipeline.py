@@ -314,6 +314,115 @@ def convolve_to_round_beam(
 # ROUTINES FOR FEATHERING THE DATA
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 
+def get_cube_angular_extent(cube):
+    """Return the RA and Dec ranges of the given cube.
+
+    Parameters
+    ----------
+    cube : str
+        Path to the cube you want the angular extent for.
+
+    Returns
+    -------
+    extent : tuple
+        Tuple of tuples where the first row (i.e. extent[0]) contains the sorted
+        RA angular extents, and the second row (i.e. extent[1]) contains the
+        sorted Dec. extents.
+    """
+    hdr = imhead(imagename=cube)
+
+    ra_edge_1 = hdr["refval"][0] - (hdr["refpix"][0] * hdr["incr"][0])
+    dec_edge_1 = hdr["refval"][1] - (hdr["refpix"][1] * hdr["incr"][1])
+    ra_edge_2 = (hdr["refval"][0]
+                 + ((hdr["shape"][0] - hdr["refpix"][0] - 1) * hdr["incr"][0]))
+    dec_edge_2 = (hdr["refval"][1]
+                  + ((hdr["shape"][1] - hdr["refpix"][1] - 1) * hdr["incr"][1]))
+
+    ra_edges_sorted = np.sort([ra_edge_1, ra_edge_2])
+    dec_edges_sorted = np.sort([dec_edge_1, dec_edge_2])
+
+    return (
+        (ra_edges_sorted[0], ra_edges_sorted[1]),
+        (dec_edges_sorted[0], dec_edges_sorted[1]),
+    )
+
+def check_angular_extent_encompasses_other(extent_1, extent_2):
+    """Return whether the first given extent completely encompasses the second.
+
+    Parameters
+    ----------
+    extent_1 : tuple
+        Output of get_cube_angular_extent function run on cube_1.
+    extent_2 : tuple
+        Output of get_cube_angular_extent function run on cube_2.
+
+    Returns
+    -------
+    encompasses_other : bool
+        Whether the first extent completely encompasses the second.
+
+    Notes
+    -----
+    Extents should come from the get_cube_angular_extent function.
+    """
+    encompassed = list()
+    for i in range(2): # 0 should be RA, 1 should be Dec
+        if (extent_2[i][0] >= extent_1[i][0]
+            and extent_2[i][1] >= extent_1[i][0]
+            and extent_2[i][0] <= extent_1[i][1]
+            and extent_2[i][1] <= extent_1[i][1]):
+            encompassed.append(True)
+        else:
+            encompassed.append(False)
+
+    return np.all(encompassed)
+
+def get_n_pad_pixels_to_encompass(cube_1, cube_2, extent_1=None, extent_2=None):
+    """Return number of pixels needed to pad angular edges of first cube to encompass the second.
+
+    Parameters
+    ----------
+    cube_1 : str
+        Path to the cube you want to encompass the second.
+    cube_2 : str
+        Path to the cube you want encompassed by the first.
+    extent_1 : tuple, optional
+        Output of get_cube_angular_extent function run on cube_1. Optional
+        because get_cube_angular_extent will just be run here if not provided.
+    extent_2 : tuple, optional
+        Output of get_cube_angular_extent function run on cube_2. Optional
+        because get_cube_angular_extent will just be run here if not provided.
+
+    Returns
+    -------
+    n_pad_pixels : int
+        Number of pixels required to pad on each angular side of cube_1 to
+        completely encompass cube_2.
+
+    Notes
+    -----
+    This assumes the first cube does not already encompass the second in both
+    angular dimensions. If the cube_1 is larger than cube_2 in a dimension and
+    that is the largest difference between all dimensions then it will probably
+    return that as the padding instead of ignoring that case (i.e. not perferct
+    as-is).
+    """
+    if extent_1 == None:
+        extent_1 = get_cube_angular_extent(cube_1)
+    if extent_2 == None:
+        extent_2 = get_cube_angular_extent(cube_2)
+
+    hdr_1 = imhead(imagename=cube_1)
+
+    delta_angular = np.abs(np.array(extent_1) - np.array(extent_2))
+
+    delta_pix = [
+        delta_angular[0] / hdr_1["incr"][0],
+        delta_angular[1] / hdr_1["incr"][1],
+    ]
+
+    return 10 + int(np.ceil(np.max(np.abs(delta_pix))))
+
 def prep_for_feather(
     gal=None, array=None, product=None, root_dir=None, 
     overwrite=False):
@@ -330,6 +439,7 @@ def prep_for_feather(
         return    
 
     sdfile_in = root_dir+'raw/'+gal+'_tp_'+product+'.image'
+    sdfile_out = root_dir+'process/'+gal+'_tp_'+product+'_align_'+array+'.image'
     interf_in = root_dir+'process/'+gal+'_'+array+'_'+product+'_flat_round.image'
     pbfile_name = root_dir+'raw/'+gal+'_'+array+'_'+product+'.pb'    
 
@@ -348,8 +458,40 @@ def prep_for_feather(
         casalog.post("Primary beam file not found: "+pbfile_name, "SEREVE", "prep_for_feather")
         return
 
+    # pad the interferometric cube in RA and Dec. if it does not fully cover the
+    # TP FoV
+    interf_extent = get_cube_angular_extent(interf_in)
+    sd_extent = get_cube_angular_extent(sdfile_in)
+    interf_covers_sd = check_angular_extent_encompasses_other(
+        interf_extent,
+        sd_extent,
+    )
+    if not interf_covers_sd:
+        n_pad_pixels = get_n_pad_pixels_to_encompass(
+            interf_in,
+            sdfile_in,
+            extent_1=interf_extent,
+            extent_2=sd_extent,
+        )
+
+        ia.open(interf_in)
+        ia.pad(
+            outfile=interf_in + ".pad_tmp",
+            npixels=n_pad_pixels,
+            wantreturn=False,
+        )
+        ia.done()
+        ia.open(pbfile_name)
+        ia.pad(outfile=pbfile_name + ".pad_tmp",
+            npixels=n_pad_pixels,
+            wantreturn=False,)
+        ia.done()
+
+        rmtables([interf_in, pbfile_name])
+        os.rename(interf_in + ".pad_tmp", interf_in)
+        os.rename(pbfile_name + ".pad_tmp", pbfile_name)
+
     # Align the relevant TP data to the product.
-    sdfile_out = root_dir+'process/'+gal+'_tp_'+product+'_align_'+array+'.image'
     imregrid(imagename=sdfile_in,
              template=interf_in,
              output=sdfile_out,
