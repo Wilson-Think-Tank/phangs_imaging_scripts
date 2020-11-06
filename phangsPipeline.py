@@ -898,25 +898,6 @@ def extract_line(in_file=None,
     os.system('rm -rf '+out_file+'.temp2'+" >> "+log_file+" 2>&1")
     os.system('rm -rf '+out_file+'.temp2.flagversions'+" >> "+log_file+" 2>&1")
 
-    # for the antennae to avoid high resolution 12 m data having a single
-    # flagged edge channel while the other configuration and array are not
-    # flagged (causing commonbeam in imaging to smooth to low resolution
-    # beam)
-    flagmanager(
-        vis=out_file,
-        mode="save",
-        versionname="phangsPipeline::extract_line",
-    )
-    mymsmd = au.createCasaTool(msmdtool)    
-    mymsmd.open(out_file)
-    n_chan_for_flag = mymsmd.nchan(0)
-    mymsmd.close()
-    flagdata(
-        vis=out_file,
-        mode="manual",
-        spw="0:0;{:}".format(n_chan_for_flag - 1),
-    )
-
     # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
     # STEP 4. Re-weight the data using statwt
     # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
@@ -946,6 +927,40 @@ def extract_line(in_file=None,
                       excludechans=True,
                       fitspw=exclude_str,
                       )
+
+    # for the ngc 4038/9 to avoid high resolution 12 m data having a single
+    # flagged edge channel while the other configuration and array are not
+    # flagged (causing commonbeam in imaging to smooth to low resolution
+    # beam)
+    mymsmd = au.createCasaTool(msmdtool)    
+    mymsmd.open(out_file)
+    n_chan_for_split = mymsmd.nchan(0)
+    mymsmd.close()
+
+    split(
+        vis=out_file,
+        outputvis=out_file + ".temp",
+        spw="0:1~{:}".format(n_chan_for_split - 2),
+        datacolumn='DATA',
+    )
+
+    casalog.origin(casa_log_origin)
+    os.system('rm -rf '+out_file+" >> "+log_file+" 2>&1")
+    os.system('rm -rf '+out_file+".flagversions"+" >> "+log_file+" 2>&1")
+
+    command = 'mv '+out_file+'.temp '+out_file+" >> "+log_file+" 2>&1"
+    casalog.origin(casa_log_origin)
+    casalog.post(command, "INFO", "extract_line")
+    var = os.system(command)
+    casalog.origin(casa_log_origin)
+    casalog.post(str(var), "INFO", "extract_line")
+
+    command = 'mv '+out_file+'.temp.flagversions '+out_file+".flagversions >> "+log_file+" 2>&1"
+    casalog.origin(casa_log_origin)
+    casalog.post(command, "INFO", "extract_line")
+    var = os.system(command)
+    casalog.origin(casa_log_origin)
+    casalog.post(str(var), "INFO", "extract_line")
 
     casalog.origin(casa_log_origin)
     casalog.post("--------------------------------------", "INFO", "extract_line")
@@ -1254,6 +1269,7 @@ def extract_phangs_lines(
             gal=gal,
             just_array=just_array,
             ext=ext,
+            append_ext=append_ext,
             line=line,
             target_width=target_width[line],
             quiet=False,
