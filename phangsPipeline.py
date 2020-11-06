@@ -2299,11 +2299,35 @@ def signal_mask(
     if operation == 'NEW':
         mask = mask
 
+    # try to free some memory since these arrays can get big
+    cube = None
+    hi_mask = None
+    low_mask = None
+    rolled_low_mask = None
+
     casalog.origin(casa_log_origin)
     os.system('rm -rf '+cube_root+'.mask'+" >> "+log_file+" 2>&1")
     os.system('cp -r '+cube_root+'.image '+cube_root+'.mask'+" >> "+log_file+" 2>&1")
+
     myia.open(cube_root+'.mask')
-    myia.putchunk(mask.astype(int))
+    if np.product(mask.shape) < 1.5e9:
+        myia.putchunk(mask.astype(int))
+    else:
+        n_chan_per_chunk = 30
+        start_chan = 0
+        end_chan = 0
+        while end_chan < mask.shape[3]:
+            if (start_chan + n_chan_per_chunk) < mask.shape[3]:
+                end_chan = start_chan + n_chan_per_chunk
+            else:
+                end_chan = mask.shape[3]
+
+            myia.putchunk(
+                mask[:, :, :, start_chan:end_chan].astype(int),
+                blc=[0, 0, 0, start_chan],
+            )
+
+            start_chan += n_chan_per_chunk
     myia.close()
 
 def export_to_fits(
