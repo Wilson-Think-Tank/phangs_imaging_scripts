@@ -1,6 +1,7 @@
 # column 1: visibility name
 # column 2: parameter to override (cell_size, x_size, y_size)
 # column 3: value (string or number)
-ngc_4038_4039_12m+7m_co21.ms cell_size  0.03arcsec
-ngc_4038_4039_12m+7m_co21.ms x_size     7350
-ngc_4038_4039_12m+7m_co21.ms y_size     8400
+ngc_4038_4039_12m_ext+12m_com+7m_co21.ms        cell_size       0.05arcsec
+ngc_4038_4039_12m_ext+12m_com+7m_co21.ms        x_size          3200
+ngc_4038_4039_12m_ext+12m_com+7m_co21.ms        y_size          3600
+#

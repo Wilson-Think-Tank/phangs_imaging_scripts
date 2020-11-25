@@ -2,22 +2,5 @@
 # column 2: parameter to override
 # column 3: new value
 #
-ngc1365_12m+7m_co21		pblimit			0.75
-ngc1365_12m+7m_co21		smallscalebias		0.9
-ngc1365_12m_co21		smallscalebias		0.9
-ngc1365_7m_co21			smallscalebias		0.7
-#
-ngc2903_1_12m+7m_co21		pblimit			0.5
-ngc2903_2_12m+7m_co21		pblimit			0.5
-#
-ngc4321north_12m+7m_co21	pblimit			0.5
-#
-ngc5068north_12m+7m_co21	pblimit			0.5
-ngc5068south_12m+7m_co21	pblimit			0.5
-#
-ngc5128_12m+7m_co21		pblimit			0.5
-ngc5128_12m+7m_co21		pblimit			0.5
-#
-ngc6744north_12m+7m_co21	pblimit			0.5
-ngc6744south_12m+7m_co21	pblimit			0.5
+ngc_4038_4039_12m_ext+12m_com+7m_co21   robust  0.0
 #

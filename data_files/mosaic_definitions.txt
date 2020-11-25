@@ -3,12 +3,22 @@
 # column 3: center dec string
 # column 4: source velocity [km/s]
 # column 5: velocity width [km/s]
-# need "parts" centers for 247, 1313, 5128, 7793
-# 12CO (2-1), centered on line, with enough channels to cover all of line
-#ngc_4038_4039   12h01m53.11s  -18d52m31.3s      1550    685
+#
+# Found highest and lowest velocity emission in 12CO (1-0) and (2-1) cubes from
+# 12 m compact and 7 m data sets and 12CO (2-1) TP (1300 to 1975 km / s),
+# added +/-100 km / s to those velocities, and took that velocity width and
+# center.
+ngc_4038_4039   12h01m53.11s  -18d52m31.3s      1638    875
+#
+# centered on line 12CO (2-1) line, matching TP velocity coverage
+#ngc_4038_4039   12h01m53.11s  -18d52m31.3s      1550    1500
+#
 # 12CO (2-1), edge of line, small N channels, to run cleaning fast
-ngc_4038_4039   12h01m53.11s  -18d52m31.3s      1335    130
-# 12CO (2-1), just noise channels, minimum channels that would not crash the pipeline
+#ngc_4038_4039   12h01m53.11s  -18d52m31.3s      1335    130
+#
+# 12CO (2-1), just noise channels, minimum channels that would not crash the
+# pipeline
 #ngc_4038_4039   12h01m53.11s  -18d52m31.3s      1835    130
+#
 # CN (1-0) high, centered on line, with enough channels to cover all of line
 #ngc_4038_4039   12h01m53.11s  -18d52m31.3s      1550    685
