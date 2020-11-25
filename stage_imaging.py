@@ -57,7 +57,7 @@ just_array = '12m_ext+12m_com+7m'
 # parameters remain hard-coded until we come up with a more general
 # solution to the rebin-and-regrid problem.
 
-lines = ['co21']
+lines = ['co10', 'co21']
 #lines = ['co21', 'c18o21', '13co21']
 #lines = ['co21', 'c18o21','13co21']
 #lines = ['13co21','c18o21']
@@ -94,7 +94,6 @@ do_concat_lines = True
 do_extract_cont = False
 do_concat_cont = False
 do_only_new = False
-do_cleanup = False
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Loop
@@ -218,16 +217,5 @@ for gal in gals:
             gal=gal,
             just_array=just_array,
             quiet=False)
-
-    # Remove intermediate files. The big space-savers here are the
-    # initial copies of the data. The data after frequency averaging
-    # are smaller by a large factor (~10). For reference, re-copying
-    # all of the PHANGS-ALMA LP takes less than a day on the OSU
-    # system. Full line and continuum exraction takes longer.
-
-    if do_cleanup:
-        pp.cleanup_phangs_staging(
-            gal=gal,
-            just_array=just_array)
 
 casalog.setlogfile(orig_log_path)
