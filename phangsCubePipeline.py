@@ -28,6 +28,7 @@ from imrebin_cli import imrebin_cli as imrebin
 from imregrid_cli import imregrid_cli as imregrid
 from imsmooth_cli import imsmooth_cli as imsmooth
 from imsubimage_cli import imsubimage_cli as imsubimage
+from rmtables_cli import rmtables_cli as rmtables
 from pipelineVersion import version as pipeVer
 # Physical constants
 sol_kms = 2.9979246e5
@@ -474,18 +475,19 @@ def prep_for_feather(
             extent_2=sd_extent,
         )
 
-        ia.open(interf_in)
-        ia.pad(
+        myia = au.createCasaTool(iatool)
+        myia.open(interf_in)
+        myia.pad(
             outfile=interf_in + ".pad_tmp",
             npixels=n_pad_pixels,
             wantreturn=False,
         )
-        ia.done()
-        ia.open(pbfile_name)
-        ia.pad(outfile=pbfile_name + ".pad_tmp",
+        myia.done()
+        myia.open(pbfile_name)
+        myia.pad(outfile=pbfile_name + ".pad_tmp",
             npixels=n_pad_pixels,
             wantreturn=False,)
-        ia.done()
+        myia.done()
 
         rmtables([interf_in, pbfile_name])
         os.rename(interf_in + ".pad_tmp", interf_in)
