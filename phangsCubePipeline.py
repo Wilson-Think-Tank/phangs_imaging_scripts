@@ -441,7 +441,7 @@ def prep_for_feather(
 
     sdfile_in = root_dir+'raw/'+gal+'_tp_'+product+'.image'
     sdfile_out = root_dir+'process/'+gal+'_tp_'+product+'_align_'+array+'.image'
-    interf_in = root_dir+'process/'+gal+'_'+array+'_'+product+'_flat_round.image'
+    interf_in = root_dir+'process/'+gal+'_'+array+'_'+product+'_pbcorr_round.image'
     pbfile_name = root_dir+'raw/'+gal+'_'+array+'_'+product+'.pb'    
 
     if (os.path.isdir(sdfile_in) == False):
@@ -468,6 +468,10 @@ def prep_for_feather(
         sd_extent,
     )
     if not interf_covers_sd:
+        casalog.origin(casa_log_origin)
+        casalog.post("Interferometric FoV does not fully cover TP FoV.", "INFO", "prep_for_feather")
+        casalog.post("Padding the interferometric intensity and primary-beam cubes.", "INFO", "prep_for_feather")
+
         n_pad_pixels = get_n_pad_pixels_to_encompass(
             interf_in,
             sdfile_in,
