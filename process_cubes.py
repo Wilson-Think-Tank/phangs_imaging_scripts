@@ -70,11 +70,9 @@ primary_beam_correct = True
 convolve_to_round_beam = True
 
 prep_for_feather = True
-# only use Chris's new feather order
-feather_data = False
-reverse_feather_data = True
+feather_data = True
 
-cleanup_cubes = True
+cleanup_cubes = False
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Directories and definitions
@@ -103,7 +101,6 @@ full_product_list = ['co21','c18o21','13co21','co10','cn10high','cn10low']
 gal_part_list = pp.list_gal_names()
 dir_key = pp.read_dir_key()
 
-inroot_dir = '../'
 vstring = 'v0'
 outroot_dir = '../release/'+vstring+'/'
 
@@ -261,20 +258,6 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                         overwrite=True, cutoff=cutoff,
                         )
 
-                if this_loop == 'feather' and reverse_feather_data:
-                    if (array == '12m_ext'
-                        or array == '12m_com'
-                        or array == '12m_ext+12m_com'
-                        or array == '7m+tp'
-                        or array == '12m_com+7m+tp'
-                        or array == '12m_ext+12m_com+7m+tp'):
-                        continue
-                    pcp.chris_feather_data(
-                        gal=gal_part, array=array, product=product,
-                        root_dir=outroot_dir,
-                        overwrite=True, cutoff=cutoff,
-                        )
-                
                 if this_loop == 'cleanup' and cleanup_cubes:
                     pcp.phangs_cleanup_cubes(
                         gal=gal_part, array=array, product=product,
