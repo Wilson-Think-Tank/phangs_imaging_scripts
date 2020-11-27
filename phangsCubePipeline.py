@@ -506,19 +506,6 @@ def prep_for_feather(
              interpolation='cubic',
              overwrite=overwrite)
 
-    # Taper the TP data by the primary beam.
-    taperfile_out = root_dir+'process/'+gal+'_tp_'+product+'_taper_'+array+'.image'
-    if overwrite:
-        casalog.origin(casa_log_origin)
-        os.system('rm -rf '+taperfile_out+" >> "+log_file+" 2>&1")
-
-    impbcor(imagename=sdfile_out, 
-            pbimage=pbfile_name, 
-            outfile=taperfile_out, 
-            mode='multiply',
-            stokes='I')
-
-    return
 
 def phangs_feather_data(
     gal=None, array=None, product=None, root_dir=None, 
