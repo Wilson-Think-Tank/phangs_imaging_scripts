@@ -519,7 +519,7 @@ def phangs_feather_data(
     if gal is None or array is None or product is None or \
             root_dir is None:
         casalog.origin(casa_log_origin)
-        casalog.post("Missing required input.", "SEVERE", "chris_feather_data")
+        casalog.post("Missing required input.", "SEVERE", "phangs_feather_data")
         return    
 
     sdfile_in = root_dir+'process/'+gal+'_tp_'+product+'_align_'+array+'.image'
@@ -528,17 +528,17 @@ def phangs_feather_data(
 
     if (os.path.isdir(sdfile_in) == False):
         casalog.origin(casa_log_origin)
-        casalog.post("Single dish file not found: "+sdfile_in, "SEVERE", "chris_feather_data")
+        casalog.post("Single dish file not found: "+sdfile_in, "SEVERE", "phangs_feather_data")
         return
         
     if (os.path.isdir(interf_in) == False):
         casalog.origin(casa_log_origin)
-        casalog.post("Interferometric file not found: "+interf_in, "SEVERE", "chris_feather_data")
+        casalog.post("Interferometric file not found: "+interf_in, "SEVERE", "phangs_feather_data")
         return
 
     if (os.path.isdir(pbfile_name) == False):
         casalog.origin(casa_log_origin)
-        casalog.post("Primary beam file not found: "+pbfile_name, "SEVERE", "chris_feather_data")
+        casalog.post("Primary beam file not found: "+pbfile_name, "SEVERE", "phangs_feather_data")
         return
 
     # Feather the "pbcorr"d inteferometric and "align"d TP data.
@@ -569,8 +569,8 @@ def phangs_feather_data(
         os.system('rm -rf '+outfile_name+" >> "+log_file+" 2>&1")
 
     casalog.origin(casa_log_origin)
-    casalog.post(infile_name, "INFO", "chris_feather_data")
-    casalog.post(pbfile_name, "INFO", "chris_feather_data")
+    casalog.post(infile_name, "INFO", "phangs_feather_data")
+    casalog.post(pbfile_name, "INFO", "phangs_feather_data")
     impbcor(imagename=infile_name,
             pbimage=pbfile_name, 
             outfile=outfile_name, 
