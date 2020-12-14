@@ -45,9 +45,14 @@ last = ""
 #  - empty list (all of the above)
 just_array = [
     '7m',
-    '12m_com',
+#    '12m_com',
+    '12m_ext',
     '12m_com+7m',
+    '12m_ext+12m_com',
+    '12m_ext+12m_com+7m',
+    '7m+tp',
     '12m_com+7m+tp',
+    '12m_ext+12m_com+7m+tp',
 ]
 
 # ... set as the products to be handled. Valid choices for the basic
@@ -72,7 +77,7 @@ convolve_to_round_beam = True
 prep_for_feather = True
 feather_data = True
 
-cleanup_cubes = False
+cleanup_cubes = True
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Directories and definitions
@@ -255,7 +260,7 @@ for this_loop in ['stage', 'process', 'feather', 'cleanup']:
                     pcp.phangs_feather_data(
                         gal=gal_part, array=array, product=product,
                         root_dir=outroot_dir,
-                        overwrite=True, cutoff=cutoff,
+                        overwrite=True
                         )
 
                 if this_loop == 'cleanup' and cleanup_cubes:

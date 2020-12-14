@@ -509,7 +509,7 @@ def prep_for_feather(
 
 def phangs_feather_data(
     gal=None, array=None, product=None, root_dir=None, 
-    cutoff=-1,overwrite=False):
+    overwrite=False):
     """
     Feather the pbcorr'd interferometric and aligned total power data
     """
@@ -574,8 +574,7 @@ def phangs_feather_data(
     impbcor(imagename=infile_name,
             pbimage=pbfile_name, 
             outfile=outfile_name, 
-            mode='multiply', cutoff=-1.0)
-#            mode='divide', cutoff=cutoff)
+            mode='multiply')
 
 # &%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%&%
 # CLEANUP
