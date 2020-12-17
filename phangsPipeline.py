@@ -2904,6 +2904,8 @@ def buildPhangsCleanCall(
     elif array == '12m_ext+12m_com+7m':
         clean_call.smallscalebias = 0.8
         clean_call.scales_as_angle = [0.0, 0.5, 1.0, 2.5, 5.0, 10.0]
+    if product not in ['co21', '13co21', 'c18o21']:
+        clean_call.scales_as_angle += [2 * clean_call.scales_as_angle[-1]]
 
     # Look up overrides in the imaging parameters
     override_dict = read_override_imaging_params()
