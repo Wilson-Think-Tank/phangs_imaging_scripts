@@ -1,4 +1,11 @@
 # column 1: galaxy
 # column 2: file where the single dish map is located
 # column 3: product
+ngc_4038_4039   ../singledish/data/ALMA_TP.NGC4038.12CO_1-0.image.fits  co10
 ngc_4038_4039   ../singledish/data/ALMA_TP.NGC4038.12CO_2-1.image.fits  co21
+ngc_4038_4039   ../singledish/data/ALMA_TP.NGC4038.13CO_2-1.image.fits  13co21
+ngc_4038_4039   ../singledish/data/ALMA_TP.NGC4038.C18O_2-1.image.fits  c18o21
+ngc_4038_4039   ../singledish/data/ALMA_TP.NGC4038.CN_1-0_high.image.fits  cn10high
+ngc_4038_4039   ../singledish/data/ALMA_TP.NGC4038.CN_1-0_low.image.fits  cn10low
+
+
