@@ -2384,6 +2384,7 @@ class cleanCall:
         self.calcpsf = True
         self.specmode = 'cube'
         self.nchan = None
+        self.start = None
         self.deconvolver = 'hogbom'
         self.threshold = '0.0mJy/beam'
         self.scales_as_pix = [0]
@@ -2456,6 +2457,7 @@ class cleanCall:
                specmode=self.specmode,
                restfreq=restfreq_str,
                nchan=self.nchan,
+               start=self.start,
                outframe='lsrk',
                veltype='radio',
                # Workflow
@@ -2936,6 +2938,13 @@ def buildPhangsCleanCall(
             clean_call.briggs_weight = float(this_override_dict['robust'])
         if this_override_dict.has_key('nchan'):
             clean_call.nchan = int(this_override_dict['nchan'])
+        if this_override_dict.has_key('start'):
+            if "'" in this_override_dict['start']:
+                clean_call.start = this_override_dict['start'].replace("'", "")
+            elif '"' in this_override_dict['start']:
+                clean_call.start = this_override_dict['start'].replace('"', '')
+            else:
+                clean_call.start = int(this_override_dict['start'])
 
     # Define the clean mask (note one mask per galaxy)
 
