@@ -2383,6 +2383,7 @@ class cleanCall:
         self.calcres = True
         self.calcpsf = True
         self.specmode = 'cube'
+        self.nchan = None
         self.deconvolver = 'hogbom'
         self.threshold = '0.0mJy/beam'
         self.scales_as_pix = [0]
@@ -2454,6 +2455,7 @@ class cleanCall:
                # Spectral axis
                specmode=self.specmode,
                restfreq=restfreq_str,
+               nchan=self.nchan,
                outframe='lsrk',
                veltype='radio',
                # Workflow
@@ -2932,6 +2934,8 @@ def buildPhangsCleanCall(
             clean_call.scales_as_angle = scales_as_angle
         if this_override_dict.has_key('robust'):
             clean_call.briggs_weight = float(this_override_dict['robust'])
+        if this_override_dict.has_key('nchan'):
+            clean_call.nchan = int(this_override_dict['nchan'])
 
     # Define the clean mask (note one mask per galaxy)
 
