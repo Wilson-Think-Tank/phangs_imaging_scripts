@@ -18,3 +18,23 @@ ngc_4038_4039_12m_com+7m_c18o21         robust  2.0
 ngc_4038_4039_12m_ext+12m_com_c18o21    robust  2.0
 ngc_4038_4039_12m_ext+12m_com+7m_c18o21 robust  2.0
 #
+ngc_4038_4039_7m_cn10high                 robust  2.0
+ngc_4038_4039_12m_com_cn10high            robust  2.0
+ngc_4038_4039_12m_ext_cn10high            robust  2.0
+ngc_4038_4039_12m_com+7m_cn10high         robust  2.0
+ngc_4038_4039_12m_ext+12m_com_cn10high    robust  2.0
+ngc_4038_4039_12m_ext+12m_com+7m_cn10high robust  2.0
+ngc_4038_4039_7m_cn10high                 nchan   167
+ngc_4038_4039_12m_com_cn10high            nchan   167
+ngc_4038_4039_12m_ext_cn10high            nchan   167
+ngc_4038_4039_12m_com+7m_cn10high         nchan   167
+ngc_4038_4039_12m_ext+12m_com_cn10high    nchan   167
+ngc_4038_4039_12m_ext+12m_com+7m_cn10high nchan   167
+#
+ngc_4038_4039_7m_cn10low                  robust  2.0
+ngc_4038_4039_12m_com_cn10low             robust  2.0
+ngc_4038_4039_12m_ext_cn10low             robust  2.0
+ngc_4038_4039_12m_com+7m_cn10low          robust  2.0
+ngc_4038_4039_12m_ext+12m_com_cn10low     robust  2.0
+ngc_4038_4039_12m_ext+12m_com+7m_cn10low  robust  2.0
+#
