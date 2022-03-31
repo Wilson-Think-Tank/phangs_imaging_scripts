@@ -14,7 +14,8 @@ It runs in five steps right now:
 
 2) Stage the imaging using `stage_imaging.py`
 
-3) Image the data using `image_data.py`
+3) Image the data using `image_data.py` (see [CHECKING IMAGING PROGRESS](#checking-imaging-progress)
+   below for tracking progress of this step)
 
 4) Create final cubes using one of two methods:
 
@@ -251,6 +252,20 @@ multi/singlescale steps only).
 These steps are carried out inside the phangsPipeline, which in
 principle (with a bit of work) can be deployed in a variety of more
 general ways.
+
+### CHECKING IMAGING PROGRESS
+
+Since some data sets can take tens of days (or more) to run through
+even a single imaging step, a tool has been added for visualizing the
+progress of imaging. The script `check_clean_progress.py` does this,
+and it is written in plain Python that can be run in CASA or Python 2/3.
+
+Broadly, it parses a CASA log file to extract the total model flux and
+peak residuals that are present in the cube after each major cycle. It
+plots the difference of the model fluxes and residuals from one major
+cycle to the next (vs. time). If the cleaning is going well (i.e.
+converging) then these quantities should tend towards zero. See the
+header at the top of the script for more details.
 
 ### CLEAN MASKS
 
